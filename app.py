@@ -29,7 +29,7 @@ def saved():
     
     presence = username in set(userslist)           # check to see whether the user is new or old
     
-    if presence:                    # for OLD USERS:
+    if presence:                    # for OLD USERS: 
 
         user_index = userslist.index(username)      # find it's index in the database (db list)
         db[user_index].saver(entry)                 # update the db instance with the given entry
