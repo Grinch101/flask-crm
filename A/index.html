@@ -29,7 +29,7 @@
     </div>
     <form method="POST" action="/saved" class="jumbotron container-fluid">
       <div class="form-group col-md-6">
-        <h4>Please Your Name</h4>
+        <h4>Please Enter Your Name</h4>
         <br />
         <label for="client_name">Your Name</label>
         <input
@@ -89,7 +89,7 @@
     <br />
     <div class="jumbotron">
       {% if db %}
-      <p>Database report :</p>
+      <p> Database Report :</p>
       {% for item in db %}
       <li>{{item}}</li>
       {% endfor %} {% endif %}
