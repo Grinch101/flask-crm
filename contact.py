@@ -1,16 +1,18 @@
 
 class Contact():
-    def __init__(self,client_name):
-        mylist = []
+    def __init__(self,client_name, name, phone):
         self.client_name = client_name
-        self.mylist = mylist
+        self.name = name
+        self.phone = phone
 
-    def saver(self,new_item): # new item is a tuple
-        mylist=self.mylist
-        mylist.append(new_item)
+        entries = {'client_name':client_name,
+                    'name':name,
+                    'phone': phone
+                  }
+        self.entries = entries
+      
+      def __repr__(self):
 
-    def reporter(self):
-         return self.mylist
+        
 
-    def __repr__(self):
-        return f" {self.client_name} has saved {len(self.mylist)} contact(s)"
+db = []

@@ -1,13 +1,8 @@
 from flask import Flask, render_template, request
-from contact import Contact
+from contact import Contact, db
 
 app = Flask(__name__, template_folder='A')
 app.config['SECRET_KEY'] = 'key'
-
-
-
-db = []
-
 
 ## View Function ##############
 
@@ -22,28 +17,27 @@ def saved():
 
     username = request.form['client_name']
     input_name = request.form['Name']
-    input_number = request.form['Number']           # Request the inputs
+    input_number = request.form['Number']
 
-    userslist = [ i.client_name for i in db ]       # create a list of all users (phonebook owners)
-    entry = (input_name,input_number)               # create a tuple of their entry 
+    db.append( Contact(username , input_name , input_number) )
     
-    presence = username in set(userslist)           # check to see whether the user is new or old
-    
-    if presence:                    # for OLD USERS: 
+    contact_list = [i.entries['name'] for i in db]
+    number_list = [i.entries['phone'] for i in db]
+    owners_list = [i.entries['client_name'] for i in db]
+    contactlist = list(zip(owners_list , number_list , contact_list))
 
-        user_index = userslist.index(username)      # find it's index in the database (db list)
-        db[user_index].saver(entry)                 # update the db instance with the given entry
-        contactlist = db[user_index].reporter()     # Get a __repr__ of the Contact object
+    def entry_count(owners_list = owners_list):
+        # This gonna be NASTY, Sorry!
+        Z = owners_list # only to use shorter name!
+        owner_freq = list(zip([Z.count(i) for i in set(Z)],set(Z)))
         
-        
-    else:                           # for NEW USERS:
-        phonebook = Contact(username)               # Create a new Contact object
-        phonebook.saver(entry)                      # save the entry into that object
-        contactlist = phonebook.reporter()          # Get a __repr__ of the Contact object
-        db.append(phonebook)                        # add the newly created Contact object to the db
+        reporter = []
+        for i in owner_freq:
+            reporter.append(f'{i[1]} has saved {i[0]} contact(s)')
+        return reporter
         
 
-    return render_template('index.html' , mylist=contactlist, username = username,  db = db)
+    return render_template('index.html' , mylist=contactlist, username = username  , db = entry_count() )
 
 if __name__ == '__main__':
     app.run(debug = True)
