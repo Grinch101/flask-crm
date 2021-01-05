@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
 ## View Function ##############
-
+phonbook = Contact()
 @app.route('/',methods=['GET'])
 def index():
 
@@ -19,11 +19,10 @@ def saved():
     input_name = request.form['Name']
     input_number = request.form['Number']
 
-    phonbook = Contact()
+    
     phonbook.insert(username,input_name , input_number)
 
 
     return render_template('index.html' , mylist=phonbook.GetAll(), username = username  )
 
-if __name__ == '__main__':
-    app.run(debug = True)
+
