@@ -12,9 +12,13 @@ class Contact():
         self.db.append(entry)
     
     def GetAll(self):
-      return self.db
-        
+
+        return self.db
+
+    def delete(self, i):
+        self.db.remove(i)
+    
       
-      def __len__(self):
+    def __len__(self):
         return len(self.db)
     

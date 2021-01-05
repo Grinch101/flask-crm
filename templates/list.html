@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<ul>
+{% for i in mylist %}
+
+<form name="delete-form" method="POST" action="{{url_for('delete')}}">
+<li>
+<button name="{{i}}" value="{{i}}" type="button" class="btn btn-danger">Delete</button> <-->  {{i}}
+</li>
+</form>
+
+
+
+{% endfor %}
+</ul>
+
+
+
+{% endblock content %}
+
+
+
