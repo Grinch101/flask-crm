@@ -6,7 +6,7 @@ app.config['SECRET_KEY'] = 'key'
 
 ## View Function ##############
 
-#  injecting variables 
+#  injecting some functions to Jinja2 
 @app.context_processor
 def inject_enumerate():
     return dict(enumerate=enumerate,
@@ -40,19 +40,20 @@ def saved():
 def table():
     
     show_list = phonebook.GetAll()
-
+ 
     return render_template('list.html' , mylist = show_list)
 
 @app.route('/delete' , methods=["GET","POST"])
-def delete():
+def delete(): 
 
     db = phonebook.GetAll()
+
     index = request.form.get("DELETE")
     index = int(index)
     val = db[index]
     phonebook.delete(val)
     return redirect(url_for('table'))
-
+ 
 
 if __name__ == "__main__":
     app.run(debug=True)
