@@ -46,7 +46,7 @@ def table():
 @app.route('/delete' , methods=["GET","POST"])
 def delete(): 
 
-    db = phonebook.GetAll()
+    db = phonebook.GetAll() 
 
     index = request.form.get("DELETE")
     index = int(index)
