@@ -2,23 +2,37 @@
 
 {% block content %}
 
-<ul>
-{% for i in mylist %}
-
-<form name="delete-form" method="POST" action="{{url_for('delete')}}">
-<li>
-<button name="{{i}}" value="{{i}}" type="button" class="btn btn-danger">Delete</button> <-->  {{i}}
-</li>
-</form>
 
 
-
-{% endfor %}
-</ul>
-
-
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Client Name</th>
+      <th scope="col">Name</th>
+      <th scope="col">Number</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <form method="POST" action="{{ url_for('delete') }}" >
+    {% for i in range(len(mylist)) %}
+      <th scope="row">{{i}}</th>
+      <td>{{mylist[i]['client_name']}}</td>
+      <td>{{mylist[i]['name']}}</td>
+      <td>{{mylist[i]['phone']}}</td>
+      <td>
+        <button 
+        name="DELETE" 
+        value={{i}} 
+        type="button" 
+        class="btn btn-danger">Delete</button>
+    </tr>
+   {% endfor %}</form></td>
+  </tbody>
+</table>
 
 {% endblock content %}
-
 
 

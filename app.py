@@ -6,6 +6,16 @@ app.config['SECRET_KEY'] = 'key'
 
 ## View Function ##############
 
+#  injecting variables 
+@app.context_processor
+def inject_enumerate():
+    return dict(enumerate=enumerate,
+                list = list,
+                range = range,
+                len = len)
+
+
+
 phonebook = Contact()
 @app.route('/', methods=['POST', "GET"])
 def index():
@@ -26,7 +36,7 @@ def saved():
     return redirect(url_for('index'))
 
 
-@app.route('/table' , methods=["GET"])
+@app.route('/table' , methods=["GET","POST"])
 def table():
     
     show_list = phonebook.GetAll()
@@ -36,18 +46,12 @@ def table():
 @app.route('/delete' , methods=["GET","POST"])
 def delete():
 
-    for i in phonebook.GetAll():
-        if i == request.form[i]:
-            phonebook.delete(i)
-
-            
+    db = phonebook.GetAll()
+    index = request.form.get("DELETE")
+    index = int(index)
+    val = db[index]
+    phonebook.delete(val)
     return redirect(url_for('table'))
-    
-
-
-
-
-
 
 
 if __name__ == "__main__":
