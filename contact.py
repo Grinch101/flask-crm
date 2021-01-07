@@ -17,9 +17,9 @@ class Contact():
     def find_index(self,id):
         
         
-        for dic in self.db:
+        for i , dic in enumerate(self.db):
             if dic['id'] == id:
-                index = self.db.index(dic)
+                index = i
         return index
 
     def find_val(self,id): # returns value corresponding to i
