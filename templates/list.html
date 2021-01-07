@@ -17,18 +17,18 @@
   <tbody>
     <tr>
     <form method="POST" action="{{ url_for('delete') }}" >
-    {% for index , key , value in mylist %}
+    {% for i , dic in enumerate(mylist , start=1) %}
 
 
-      <td> {{index}} </td>
+      <td> {{i}} </td>
 
-      <td>{{value['client_name']}}</td>
-      <td>{{value['name']}}</td>
-      <td>{{value['phone']}}</td>
+      <td>{{dic['client_name']}}</td>
+      <td>{{dic['name']}}</td>
+      <td>{{dic['phone']}}</td>
       <td> 
        <button 
         name="DELETE" 
-        value={{key}} 
+        value={{dic['id']}} 
         type="submit" 
         class="btn btn-danger">
         Delete

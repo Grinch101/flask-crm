@@ -8,7 +8,7 @@ app.config['SECRET_KEY'] = 'key'
 
 #  injecting some functions to Jinja2 
 @app.context_processor
-def inject_enumerate():
+def inject_func():
     return dict(enumerate=enumerate,
                 list = list,
                 range = range,
@@ -39,16 +39,7 @@ def saved():
 @app.route('/table' , methods=["GET","POST"])
 def table():
     
-    # sorted_by_client = sorted(phonebook.values(), key=lambda k: k['client_name']) 
-    vals = phonebook.values()
-    keys = phonebook.keys()
-    rows = range(len(phonebook))
-    
-    giant_list = []
-    for i in rows:
-        giant_list.append( (i , keys[i] , vals[i])  )
-
-    return render_template('list.html' , mylist = giant_list )
+    return render_template('list.html' , mylist = phonebook.db )
 
 
 @app.route('/delete' , methods=["GET","POST"])
