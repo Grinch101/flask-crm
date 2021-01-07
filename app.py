@@ -39,19 +39,24 @@ def saved():
 @app.route('/table' , methods=["GET","POST"])
 def table():
     
-    show_list = phonebook.GetAll()
- 
-    return render_template('list.html' , mylist = show_list)
+    # sorted_by_client = sorted(phonebook.values(), key=lambda k: k['client_name']) 
+    vals = phonebook.values()
+    keys = phonebook.keys()
+    rows = range(len(phonebook))
+    
+    giant_list = []
+    for i in rows:
+        giant_list.append( (i , keys[i] , vals[i])  )
+
+    return render_template('list.html' , mylist = giant_list )
+
 
 @app.route('/delete' , methods=["GET","POST"])
 def delete(): 
 
-    db = phonebook.GetAll() 
+    index = int(request.form.get("DELETE"))
+    phonebook.delete(index)
 
-    index = request.form.get("DELETE")
-    index = int(index)
-    val = db[index]
-    phonebook.delete(val)
     return redirect(url_for('table'))
   
 
