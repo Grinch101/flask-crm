@@ -10,9 +10,13 @@ Jinja2==2.11.2
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+names==0.3.0
 pylint==2.6.0
+random-string==1.0
+random-text-generator==1.1.0
 six==1.15.0
 toml==0.10.2
+url64==0.0.2
 Werkzeug==1.0.1
 wrapt==1.12.1
 WTForms==2.3.3

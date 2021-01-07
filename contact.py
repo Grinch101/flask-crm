@@ -46,7 +46,7 @@ class Contact():
                     'phone': new_phone,
                     'id':id  }
 
-        self.db.append({i : new_entry})
+        self.db.append(new_entry)
 
         self.db = sorted( self.db , key = lambda dic: dic['id'] )
 
