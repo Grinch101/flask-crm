@@ -47,8 +47,9 @@ def table():
 @app.route('/delete' , methods=["GET","POST"])
 def delete(): 
 
-    index = int(request.form.get("DELETE"))
-    phonebook.delete(index)
+    id = int(request.form.get("DELETE"))
+    phonebook.delete(id)
+    flash(f"ID:{id} Deleted")
 
     return redirect(url_for('table'))
   
@@ -56,7 +57,7 @@ def delete():
 
 
 i = 0
-while i <= 15000:
+while i <= 150:
 
     user_length = random.randint(1,5)
     for j in range(user_length):
