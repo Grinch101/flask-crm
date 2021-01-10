@@ -25,8 +25,7 @@ class Contact():
         self.id += 1
 
     def find_index(self,id):
-        
-        
+                
         return self.id_index_dict[id]
 
     def find_val(self,id): # returns value corresponding to i
