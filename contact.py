@@ -19,7 +19,7 @@ class Contact():
         
         
         ## side dics:
-        self.id_phone_dict[self.id] = phone
+        self.id_phone_dict[phone] = self.id
         self.id_index_dict[self.id] = len(self.db) - 1
 
         self.id += 1
