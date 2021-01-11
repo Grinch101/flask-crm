@@ -1,25 +1,36 @@
 class User():
     def __init__(self):
-        self.email_password = {}
-        # self.email_IDname = {}
 
-    def validate(self ,email,password):
+        self.users_list = []
+        self.userid_password = {}
+        self.email_userid = {}
+        self.userid_username = {}
+        self.userid = 0
+
+    def validate(self,email,password):
         
-        if self.email_password.get(email) == password:
-            # username = self.email_IDname[email]
-            # flash(f'Welcome {username}')
-            Logged_in = True
+        userid = self.email_userid[email]
 
-            return Logged_in
+        return self.userid_password[userid] == password
+
+
+    def old_user(self, email):
+        return email in self.email_userid.keys()
+
+    def register(self,client_name, email, password):
         
-        else:
-            self.register( email, password)
-            # flash(f'{IDname} your account has been created')
-            return False
+        entry = {'client_name' : client_name,
+                'email': email,
+                'password':password,
+                'userid': self.userid }
+        
+        self.users_list.append(entry)
+        self.email_userid[email] = self.userid
+        self.userid_username[self.userid] = client_name
+        self.userid_password[self.userid] = password
 
-    def register(self, email, password):
-            self.email_password[email] = password
-            # self.email_IDname[email] = IDname
+        self.userid  = self.userid + 1
+
     
 
     

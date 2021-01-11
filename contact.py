@@ -6,22 +6,30 @@ class Contact():
         self.db = []
         self.id = 0
         # helper dictionaries:
-        
+        self.id_userid = {}
         self.id_index_dict = {}
         self.id_phone_dict = {}
-    def insert(self,client_name,name,phone):
+        self.userid_id = {}
         
-        entry = {   'client_name':client_name,
-                    'name':name,
-                    'phone': phone,
-                    'id':  self.id }
+    def insert(self,userid,client_name,name,phone):
+        
+        entry = {   'userid'        :userid     ,
+                    'client_name'   :client_name,
+                    'name'          :name       ,
+                    'phone'         :phone      ,
+                    'id'            :self.id    }
+
         self.db.append(entry)
-        
-        
+
         ## side dics:
+        if self.userid_id.get(userid):
+            self.userid_id[userid].append(self.id)
+        else:
+            self.userid_id[userid] = [self.id]
+
         self.id_phone_dict[phone] = self.id
         self.id_index_dict[self.id] = len(self.db) - 1
-
+        self.id_userid[self.id] = userid
         self.id += 1
 
     def find_index(self,id):
@@ -61,7 +69,10 @@ class Contact():
     def update(self , id , new_client , new_name , new_phone):
         
         self.delete(id)
-        new_entry = {   'client_name':new_client,
+        userid = self.id_userid[id]
+        
+        new_entry = {'userid':userid,
+                    'client_name':new_client,
                     'name':new_name,
                     'phone': new_phone,
                     'id':id  }
@@ -70,7 +81,14 @@ class Contact():
 
         self.db = sorted( self.db , key = lambda dic: dic['id'] )
 
-      
+    
+    def find_book(self, userid):
+        try:
+            user_list_of_id = self.userid_id.get(userid)
+            return [self.find_val(id) for id in user_list_of_id]
+        except:
+            return []
+
     def __len__(self):
         return len(self.db)
     
