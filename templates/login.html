@@ -19,14 +19,15 @@
         required>
 
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-      <a class="" href="{{url_for('signup')}}">Sign up</a>
+
     </form>
+    <a class="" href="{{url_for('signup_form')}}">Sign up</a>
   </div>
 </div>
 {% if get_flashed_messages()[0] %}
 <div class="alert alert-success" role="alert">
-  <h4 class="alert-heading">Error!</h4>
-  <p>{{get_flashed_messages()[0]}}.</p>
+  <h4 class="alert-heading">!</h4>
+  <p>{{get_flashed_messages()[0]}}</p>
 </div>
 {% endif %}
 

@@ -42,7 +42,9 @@
       </div>
     </div>
     <div>
-      <a class="btn btn-outline-success my-2 my-sm-0" href="{{url_for('logout')}}">LOG OUT</a>
+      <form action="{{url_for('logout')}}" method="POST">
+        <button class="w-80 btn btn-dark btn-primary" type="submit" name="signout" value='CLICKED'>Logout</button>
+      </form>
     </div>
   </nav>
 
