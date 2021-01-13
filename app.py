@@ -3,11 +3,21 @@ from contact import Contact
 from user import User
 import names
 import random
+from functools import wraps
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
-
+#########################
+def login_required(func):
+    @wraps(func)
+    def wrap(*args, **kwargs):
+        if request.cookies.get('user_id'):
+            return func(*args, **kwargs)
+        else:
+            
+            return redirect(url_for(('login_form')))
+    return wrap
 
 #  injecting some functions to Jinja2 
 @app.context_processor
@@ -24,27 +34,31 @@ users_handler = User()
 
 ## View Function ##############
 
-@app.route('/', methods=["GET",'POST'])
+@app.route('/', methods=["GET"])
+@login_required
 def index():
-    if request.cookies.get('user_id'):
-        userid = int(request.cookies.get('user_id'))
-        username = users_handler.userid_username.get(userid)
-        return render_template('index.html' , username = username)
-    else:
-        return render_template('login.html')
+    userid = int(request.cookies.get('user_id'))
+    entry = users_handler.find_val(userid)
+    username = entry['client_name']
+    return render_template('index.html' , username = username)
+ 
 
+
+@app.route('/login' , methods=["GET"])
+def login_form():
+    flash("Please Login first!")
+    return render_template('login.html')
 
 
 @app.route('/login_check', methods=["POST"])
 def login_check():
 
-   
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email , password):
 
-        userid = users_handler.email_userid[email]
+        userid = users_handler.find_userid_by_email(email)
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id' , str(userid))    
         return response
@@ -52,45 +66,46 @@ def login_check():
     else:
     
         flash('Wrong Email or Password. Please try again, or Sign-up!')
-        return render_template('login.html')
+        return redirect(url_for('login_form'))
+    
+
+@app.route('/signup', methods=["GET"] )
+def signup_form():
+
+    return render_template('signup.html')
 
 
-@app.route('/signup', methods=['GET',"POST"] )
+@app.route('/signup', methods=["POST"] )
 def signup():
 
-    if request.form.get("submit")=='CLICKED':
+    email = request.form.get("inputEmail")
+    password = request.form.get("inputPassword")
+    client_name = request.form.get("client_name")
 
-        email = request.form.get("inputEmail")
-        password = request.form.get("inputPassword")
-        client_name = request.form.get("client_name")
+    if not users_handler.old_user(email):
 
-        if not users_handler.old_user(email):
+        users_handler.register(client_name,email,password)
+        userid = users_handler.email_userid[email]
 
-            users_handler.register(client_name,email,password)
-            userid = users_handler.email_userid[email]
+        response = make_response(redirect(url_for('index')))
+        response.set_cookie('user_id' , str(userid)) 
+        return response
+    else:
+        flash('Email in use, please login')
+        return redirect(url_for('signup_form'))
 
-            response = make_response(redirect(url_for('index')))
-            response.set_cookie('user_id' , str(userid)) 
-            return response
-    
-        else:
 
-            flash('Login Failed!')
-            return render_template('signup.html')
-    
-    else:   
-
-        return render_template('signup.html')
-    
 
 @app.route('/saved' , methods=["POST"])
+@login_required
 def saved():
     
     input_name = request.form['Name']
     input_number = request.form['Number']
     userid = request.cookies.get('user_id')
     userid = int(userid)
-    username = users_handler.userid_username[userid]
+    entry = users_handler.find_val(userid)
+    username = entry.get('client_name')
 
     phonebook.insert(userid,username,input_name,input_number)
 
@@ -99,20 +114,20 @@ def saved():
     return redirect(url_for('index'))
 
 
-@app.route('/table' , methods=["GET", "POST"])
+@app.route('/table' , methods=["GET"])
+@login_required
 def table():
     
-    if request.cookies.get('user_id'):
-        userid = request.cookies.get('user_id')
-        userid = int(userid)
-        contact_list = phonebook.find_book(userid)
+    userid = request.cookies.get('user_id')
+    userid = int(userid)
+    contact_list = phonebook.find_book(userid)
 
-        return render_template('list.html' , mylist = contact_list )
-    else:
-        return render_template('login.html')
+    return render_template('list.html' , mylist = contact_list )
+
 
 
 @app.route('/delete' , methods=["POST"])
+@login_required
 def delete(): 
 
     id = int(request.form.get("DELETE"))
@@ -121,10 +136,11 @@ def delete():
 
     return redirect(url_for('table'))
   
-@app.route('/logout' , methods=['GET'])
+@app.route('/logout' , methods=['POST'])
+@login_required
 def logout():
     
-    response = make_response(render_template('login.html'))
+    response = make_response(redirect(url_for('login_form')))
     response.set_cookie('user_id' , "" , max_age = 0)
     return response
 
@@ -140,28 +156,20 @@ def behind():
         list3 = users_handler.users_list
 
         dic1 = phonebook.id_index_dict
-        dic2 = phonebook.id_userid
+        # dic2 = phonebook.id_userid
 
-        dic3 = users_handler.userid_password
-        dic4 = users_handler.userid_username
-        dic5 = users_handler.email_userid
+        # dic3 = users_handler.userid_password
+        # dic4 = users_handler.userid_username
+        dic2 = users_handler.email_userid
 
         return render_template('behind-the-scene.html', dic1=dic1,
                                                         dic2=dic2,
-                                                        dic3=dic3,
-                                                        dic4=dic4,
-                                                        dic5=dic5, 
                                                         list1=list1,
                                                         list2 = list2,
                                                         list3=list3)
     
     else :
         return render_template('behind-the-scene.html' )
-
-
-
-
-
 
 
 # i = 0
