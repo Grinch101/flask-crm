@@ -4,6 +4,7 @@
 
 
     <div class="container col-sm">
+      <h1>{{username}}</h1>
       <h2>Welcome to Simple Phone Book</h2>
     </div>
     <form
@@ -57,7 +58,7 @@
     {% if get_flashed_messages()[0] %}
     <div class="alert alert-success" role="alert">
       <h4 class="alert-heading">Saved!</h4>
-      <p>{{get_flashed_messages()[0]}}.</p>
+      <p>{{get_flashed_messages()[0]}}</p>
     </div>
     {% endif %}
     
