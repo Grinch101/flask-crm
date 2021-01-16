@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response
-from MyModels.contact import Contact
-from MyModels.user import User
+from models.contact import Contact
+from models.user import User
 import names
 import random
 

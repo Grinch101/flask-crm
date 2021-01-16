@@ -1,4 +1,4 @@
-from MyModels.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class User(BaseModel):
