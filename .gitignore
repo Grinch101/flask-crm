@@ -6,7 +6,5 @@ __pycache__
 *.pyc
 A
 templates/debug.log
-contact.py
-user.py
-app2.py
+
 
