@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response
-from contact import Contact
-from user import User
+# from contact import Contact
+# from user import User
+from MyModels import Contact, User
 import names
 import random
 
