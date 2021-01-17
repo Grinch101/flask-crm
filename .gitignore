@@ -1,8 +1,9 @@
 .gitignore
-Procfile
 procedure.bat
 __pycache__
 .vscode
 *.pyc
 A
 templates/debug.log
+
+
