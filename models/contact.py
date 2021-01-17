@@ -4,7 +4,6 @@ from models.BaseModel import BaseModel
 class Contact(BaseModel):
 
     def __init__(self):
-        # self.id = 0
         self.userid_id = {}
         super().__init__()
 
