@@ -8,12 +8,12 @@ class User(BaseModel):
         # self.userid = 0
         super().__init__()
 
-    def register(self, client_name, email, password):
-        entry = {'client_name': client_name,
-                 'email': email,
-                 'password': password,
-                 'userid': self.id_sequence_counter}
-        self.add(entry)
+    # def register(self, client_name, email, password):
+    #     entry = {'client_name': client_name,
+    #              'email': email,
+    #              'password': password,
+    #              'userid': self.id_sequence_counter}
+    #     self.add(entry)
         
         # self.id_index[self.id_sequence_counter] = len(self.list) - 1
         # self.email_userid[email] = self.id_sequence_counter

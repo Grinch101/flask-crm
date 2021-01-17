@@ -8,14 +8,25 @@ class Contact(BaseModel):
         self.userid_id = {}
         super().__init__()
 
-    def insert(self, userid, client_name, name, phone):
+    # def insert(self, userid, client_name, name, phone):
 
-        entry = {'userid': userid,
-                 'client_name': client_name,
-                 'name': name,
-                 'phone': phone,
-                 'id': self.id_sequence_counter}
-        self.add(entry)
+    #     entry = {'userid': userid,
+    #              'client_name': client_name,
+    #              'name': name,
+    #              'phone': phone,
+    #              'id': self.id_sequence_counter}
+    #     self.add(entry)
+
+    def add(self,entry):
+        entry['id'] = self.id_sequence_counter
+        super().add(entry)
+        userid = entry['userid']
+        
+        if self.userid_id.get(userid):
+            self.userid_id[userid].append(self.id_sequence_counter-1)
+        else:
+            self.userid_id[userid] = [self.id_sequence_counter-1]
+
 
     def delete(self, id_sequence_counter):
 
