@@ -42,8 +42,8 @@ class User(BaseModel):
 
     def delete(self, userid):
 
-        entry = self.find_val(userid)
-        super().delete(entry)
+        # entry = self.find_val(userid)
+        super().delete(userid)
         del self.id_index[userid]
         for userid in range(userid+1, len(self.list)+1):
             self.id_index[userid] -= 1
