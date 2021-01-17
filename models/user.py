@@ -7,6 +7,11 @@ class User(BaseModel):
         self.email_userid = {}
         super().__init__()
 
+    def add(self, entry):
+        userid = super().add(entry)
+        email = entry['email']
+        self.email_userid[email] = userid
+
     def validate(self, email, password):
 
         if self.old_user(email):
