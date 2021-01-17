@@ -81,10 +81,13 @@ def signup():
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
+    entry = {   'client_name':client_name,
+                'email':email,
+                'password':password}
 
     if not users_handler.old_user(email):
 
-        users_handler.register(client_name,email,password)
+        users_handler.register(entry)
         userid = users_handler.email_userid[email]
 
         response = make_response(redirect(url_for('index')))
@@ -107,7 +110,12 @@ def saved():
     entry = users_handler.find_val(userid)
     username = entry.get('client_name')
 
-    phonebook.insert(userid,username,input_name,input_number)
+    entry = {   'userid'        :userid,	        
+                'client_name'   :username,
+                'name'          :input_name,
+                'phone'         :input_number}
+
+    phonebook.insert(entry)
 
     flash(f'{input_number} for {input_name} has been saved')
 
