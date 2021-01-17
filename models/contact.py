@@ -8,41 +8,30 @@ class Contact(BaseModel):
         self.userid_id = {}
         super().__init__()
 
-    # def insert(self, userid, client_name, name, phone):
 
-    #     entry = {'userid': userid,
-    #              'client_name': client_name,
-    #              'name': name,
-    #              'phone': phone,
-    #              'id': self.id_sequence_counter}
-    #     self.add(entry)
+    def add(self, entry):
+        
+        id  = super().add(entry)
 
-    def add(self,entry):
-        entry['id'] = self.id_sequence_counter
-        super().add(entry)
+        # extract the userid back, add to helper dictionaries:
         userid = entry['userid']
         
         if self.userid_id.get(userid):
-            self.userid_id[userid].append(self.id_sequence_counter-1)
+            self.userid_id[userid].append(id)
         else:
-            self.userid_id[userid] = [self.id_sequence_counter-1]
+            self.userid_id[userid] = [id]
 
 
-    def delete(self, id_sequence_counter):
+    def delete(self, id):
 
         try:
-            super().delete(id_sequence_counter)
-            del self.id_index[id_sequence_counter]
-            for id in range(id_sequence_counter+1, len(self.list)+1):
+            super().delete(id)
+            del self.id_index[id]
+            for id in range(id+1, len(self.list)+1):
                 self.id_index[id] -= 1
         except:
             pass
 
-    # def update(self, id_sequence_counter, new_value):
-
-    #     entry = self.find_val(id_sequence_counter)
-    #     entry[entity] = new_value
-    #     super().update(id_sequence_counter, entry)
 
     def find_book(self, userid):
         try:

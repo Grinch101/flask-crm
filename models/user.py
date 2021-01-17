@@ -8,12 +8,11 @@ class User(BaseModel):
         # self.userid = 0
         super().__init__()
 
-    # def register(self, client_name, email, password):
+    # def add(self, entry):
     #     entry = {'client_name': client_name,
     #              'email': email,
-    #              'password': password,
-    #              'userid': self.id_sequence_counter}
-    #     self.add(entry)
+    #              'password': password}
+    #     super().add(entry)
         
         # self.id_index[self.id_sequence_counter] = len(self.list) - 1
         # self.email_userid[email] = self.id_sequence_counter
@@ -49,18 +48,18 @@ class User(BaseModel):
         for userid in range(userid+1, len(self.list)+1):
             self.id_index[userid] -= 1
 
-    def update(self, userid, new_value, entity='email'):
+    # def update(self, userid, new_value, entity='email'):
 
-        old_entry = self.find_val(userid)
-        if entity == 'email':
-            email = old_entry.get('email')
-            del self.email_userid[email]
-            self.email_userid[new_value] = userid
+    #     old_entry = self.find_val(userid)
+    #     if entity == 'email':
+    #         email = old_entry.get('email')
+    #         del self.email_userid[email]
+    #         self.email_userid[new_value] = userid
 
-        new_entry = old_entry
-        new_entry[entity] = new_value
+    #     new_entry = old_entry
+    #     new_entry[entity] = new_value
 
-        super().update(userid, new_entry)
+    #     super().update(userid, new_entry)
 
     def find_userid_by_email(self, email):
 
