@@ -8,9 +8,7 @@ from functools import wraps
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
-#########################
-
-
+####### Define Decorator #########
 def login_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
@@ -22,8 +20,6 @@ def login_required(func):
     return wrap
 
 #  injecting some functions to Jinja
-
-
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
@@ -89,9 +85,6 @@ def signup():
                 'email':email,
                 'password':password}
 
-    entry ={"client_name":client_name,
-            "email":email,
-            "password":password}
 
     if not users_handler.old_user(email):
 
@@ -123,7 +116,7 @@ def saved():
                 'phone'         :input_number}
 
 
-    phonebook.insert(value)
+    phonebook.add(value)
 
     flash(f'{input_number} for {input_name} has been saved')
 
@@ -165,17 +158,12 @@ def logout():
 def behind():
 
     if request.cookies.get('user_id'):
-        list1 = phonebook.GetAll()
+        list1 = phonebook.get_all()
         userid = request.cookies.get('user_id')
         userid = int(userid)
         list2 = phonebook.find_book(userid)
-        list3 = users_handler.users_list
-
-        dic1 = phonebook.id_index_dict
-        # dic2 = phonebook.id_userid
-
-        # dic3 = users_handler.userid_password
-        # dic4 = users_handler.userid_username
+        list3 = users_handler.list
+        dic1 = phonebook.id_index
         dic2 = users_handler.email_userid
 
         return render_template('behind-the-scene.html', dic1=dic1,
