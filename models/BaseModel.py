@@ -23,6 +23,11 @@ class BaseModel:
 
     def get_all(self):
         return self.list
+    
+    def clear_all(self):
+        self.list = []
+        self.id_index = {}
+        self.id_sequence_counter = 0
 
     def delete(self, id):
     
@@ -33,7 +38,8 @@ class BaseModel:
         # find ids after id, and reduce their indexes by 1:
         for i in self.id_index.keys(): ## BUG NUMBER 1
             if i > id:
-                self.id_index[i]  -= 1      
+                self.id_index[i]  -= 1
+        return entry
 
 
     def update(self, id, new_entry):
