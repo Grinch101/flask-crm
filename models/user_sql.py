@@ -61,7 +61,7 @@ class User():
 
     def get_all(self):
         try:
-            rows = self._query(User_queries.get_all)
+            rows = self._query(User_queries.get_all, userid)
             dic_list = []
             for row in rows:
                 dic_list.append(
@@ -79,3 +79,17 @@ class User():
 
         self._query(User_queries.update,
                     email, password, client_name)
+    
+    def find_val(self,userid):
+        value = self._query(User_queries.find_val, userid)
+                    # rows = self._query(User_queries.get_all)
+        dic_list = []
+        for row in value:
+            dic_list.append(
+                {'client_name': row['client_name'],
+                    'password': row['passkey'],
+                    'userid': row['userid']})
+        return dic_list[0]
+    
+    def clear_all(self):
+        self._query(User_queries.truncate)

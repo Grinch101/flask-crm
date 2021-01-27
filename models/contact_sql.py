@@ -34,7 +34,7 @@ class Contact():
         contact_phone = entry['phone']
 
         self._query(Contact_queries.add,
-                    contact_name, contact_phone, userid)
+                    userid, contact_name, contact_phone)
 
     def find_book(self, userid):
         try:
@@ -45,7 +45,8 @@ class Contact():
                 dic_list.append(
                     {'client_name': row['client_name'],
                      'name': row['contact_name'],
-                     'phone': row['contact_phone']})
+                     'phone': row['contact_phone'],
+                     'id':row['id']})
             return dic_list
         except:
             return []
