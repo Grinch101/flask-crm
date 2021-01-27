@@ -89,7 +89,8 @@ def signup():
     if not users_handler.old_user(email):
 
         users_handler.add(entry)
-        userid = users_handler.email_userid[email]
+        userid = users_handler.find_userid_by_email(email)
+
 
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(userid))
@@ -111,7 +112,7 @@ def saved():
     client_name = entry['client_name']
 
     value = {   'userid'        :userid,
-                'client_name'   :client_name,
+                # 'client_name'   :client_name,
                 'name'          :input_name ,
                 'phone'         :input_number}
 
@@ -164,7 +165,7 @@ def behind():
         list2 = phonebook.find_book(userid)
         list3 = users_handler.list
         dic1 = phonebook.id_index
-        dic2 = users_handler.email_userid
+        # dic2 = users_handler.email_userid
 
         return render_template('behind-the-scene.html', dic1=dic1,
                                dic2=dic2,
