@@ -14,7 +14,13 @@ delete = 'DELETE FROM users WHERE users.userid = %s;'
 userid_email = 'SELECT userid FROM users WHERE email = %s;'
 
 # get_all() query to retrieve all rows
-get_all = "SELECT * FROM users"
+get_all = "SELECT * FROM users WHERE useid = %s"
 
 # update() query to update a certain row specified by userid
 update = 'UPDATE users SET email = %s , passkey = %s , client_name = %s'
+
+# find_val() query to find a value related to the USERID
+find_val = 'SELECT * FROM users where userid = %s'
+
+# clear_all() query to truncate the table
+truncate = 'TRUNCATE users RESTART IDENTITY CASCADE'
