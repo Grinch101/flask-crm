@@ -1,0 +1,1 @@
+INSERT INTO contacts(userid, contact_name, contact_phone) VALUES (%s,%s,%s)
