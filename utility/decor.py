@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for
-from utility.helpers import connection_closer , connection_opener, query
+from utility.helpers import close_conn , open_conn, query
 from functools import wraps
 
 ####### Define Decorator #########
@@ -18,12 +18,12 @@ def login_required(func):
 def sql_connection(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        cur , conn = connection_opener()
+        cur , conn = open_conn()
         
         kwargs['cur'] = cur
         kwargs['conn'] = conn
         output = func(  *args, **kwargs )
-        connection_closer(cur , conn)
+        close_conn(cur , conn)
         if output:
             return output
     

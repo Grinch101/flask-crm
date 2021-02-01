@@ -5,7 +5,7 @@ from pathlib import Path
 
 # DEFINE 3 HELPER FUNCTIONS:
 
-def connection_opener(host='localhost', database='phonebook', user='postgres', password=1):
+def open_conn(host='localhost', database='phonebook', user='postgres', password=1):
     conn = psycopg2.connect(host=host,
                             database=database,
                             user=user,
@@ -14,7 +14,7 @@ def connection_opener(host='localhost', database='phonebook', user='postgres', p
     return cur, conn
 
 
-def connection_closer(cur, conn):
+def close_conn(cur, conn):
     conn.commit()
     cur.close()
     conn.close()
