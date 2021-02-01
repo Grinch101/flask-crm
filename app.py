@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, mak
 from models.contact import Contact
 from models.user import User
 from utility.decor import sql_connection , login_required , path_set
-from utility.helpers import connection_closer , connection_opener , query
+
 
 
 app = Flask(__name__)
