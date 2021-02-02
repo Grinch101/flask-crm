@@ -10,6 +10,7 @@ def open_conn(host='localhost', database='phonebook', user='postgres', password=
                             database=database,
                             user=user,
                             password=1)
+
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     return cur, conn
 
@@ -20,21 +21,21 @@ def close_conn(cur, conn):
     conn.close()
 
 
-def query(query_name, vals='' ,  **kwargs):
 
-    cur = kwargs['cur']
-    path = kwargs['path']
+
+def query(cur, conn, path, query_name,  vals=''):
 
     file_name = query_name+'.txt'
-    path  = Path(path) / file_name
-    
-    with open(path , 'r') as f:
+    path = Path(path) / file_name
+
+    with open(path, 'r') as f:
         query_text = str(f.read())
         f.close()
 
-    cur.execute(query_text ,  vals)
+    cur.execute(query_text,  vals)
     try:
-        rows = cur.fetchall() 
+        rows = cur.fetchall()
         return rows
     except:
         pass
+

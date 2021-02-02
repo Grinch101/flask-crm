@@ -7,45 +7,48 @@ class User():
     def __init__(self):
         pass
 
+    @path_set(path='SQL/user')
+    def add(self, client_name,email,password, cur, conn , path):
 
-    @path_set(path = 'SQL/user')
-    def add(self, entry , *args, **kwargs):
-        client_name = entry['client_name']
-        email = entry['email']
-        password = entry['password']
 
-        query(query_name='register', vals=(client_name, email, password) , **kwargs)
+        query(cur, conn,path, 'register', 
+              vals=(client_name, email, password))
 
-    @path_set(path = 'SQL/user')
-    def validate(self, email, password , *args, **kwargs):
+    @path_set(path='SQL/user')
+    def validate(self, email, password, cur, conn , path):
 
-        rows = query( query_name='validate', vals =( email ,) ,**kwargs )
-        inquired_password = rows[0]['passkey']
+        rows = query(cur, conn,path, 'validate', vals=(email,))
+        # print(rows)
+        if rows is None:
+            return False
+        elif rows == []:
+            return False
+        else:
+            inquired_password = rows[0]['passkey']
+            return password == inquired_password
 
-        return password == inquired_password
+    @path_set(path='SQL/user')
+    def old_user(self, email, cur, conn,path):
 
-    @path_set(path = 'SQL/user')
-    def old_user(self, email , *args, **kwargs):
-
-        email_list = query(query_name='old_user' , **kwargs)
+        email_list = query(cur, conn,path, 'old_user')
         email_list = [x['email'] for x in email_list]
         return email in email_list
 
-    @path_set(path = 'SQL/user')
-    def delete(self, userid, *args, **kwargs):
+    @path_set(path='SQL/user')
+    def delete(self, userid,  cur, conn,path):
 
-        query(query_name='delete' , vals=(userid,) , **kwargs)
+        query(cur, conn,path,  'delete', vals=(userid,))
 
-    @path_set(path = 'SQL/user')
-    def find_userid_by_email(self, email, *args, **kwargs):
+    @path_set(path='SQL/user')
+    def find_userid_by_email(self, email,  cur, conn, path):
 
-        cur = query(query_name='userid_email', vals = (email,) , **kwargs )
+        cur = query(cur, conn, path, 'userid_email', vals=(email,))
         return cur[0]['userid']
 
-    @path_set(path = 'SQL/user')
-    def get_all(self, *args, **kwargs):
-        
-        rows = query( query_name =  'get_all' , **kwargs)
+    @path_set(path='SQL/user')
+    def get_all(self, cur, conn, path):
+
+        rows = query(cur, conn, path, 'get_all')
         dic_list = []
         try:
             for row in rows:
@@ -57,18 +60,19 @@ class User():
         except:
             return []
 
-    @path_set(path = 'SQL/user')
-    def update(self, userid, new_entry, *args, **kwargs):
+    @path_set(path='SQL/user')
+    def update(self, userid, new_entry, cur, conn, path):
         email = new_entry['email']
         password = new_entry['password']
         client_name = new_entry['client_name']
 
-        query( query_name= 'update', vals=(email, password, client_name) , **kwargs)
-    
-    @path_set(path = 'SQL/user')
-    def find_val(self,userid , *args, **kwargs):
-        value = query(  query_name='find_val' , vals=(userid,) , **kwargs)
-                    # rows = self._query(User_queries.get_all)
+        query(cur, conn, path, 'update',
+              vals=(email, password, client_name))
+
+    @path_set(path='SQL/user')
+    def find_val(self, userid, cur, conn, path):
+        value = query(cur, conn, path, 'find_val', vals=(userid,))
+        # rows = self._query(User_queries.get_all)
         dic_list = []
         for row in value:
             dic_list.append(
@@ -76,7 +80,10 @@ class User():
                     'password': row['passkey'],
                     'userid': row['userid']})
         return dic_list[0]
-    
-    @path_set(path = 'SQL/user')
-    def clear_all(self , *args, **kwargs):
-        query(query_name='truncate' , *args, **kwargs)
+
+    @path_set(path='SQL/user')
+    def clear_all(self, cur, conn, path):
+        query(cur, conn, path, 'truncate')
+
+    def __init__(self):
+        pass
