@@ -8,16 +8,16 @@ class Contact():
         pass
 
     @path_set(path='SQL/contact')
-    def add(self, userid, contact_name, contact_phone, cur, conn, path):
+    def add(self, userid, contact_name, contact_phone, cur,  path):
 
-        query(cur, conn, path, 'insert',
+        query(cur,  path, 'insert',
               vals=(userid, contact_name, contact_phone))
 
     @path_set(path='SQL/contact')
-    def find_book(self, userid, cur, conn, path):
+    def find_book(self, userid, cur,  path):
 
         try:
-            rows = query(cur, conn, path, 'find', vals=(userid,))
+            rows = query(cur,  path, 'find', vals=(userid,))
             dic_list = []
             for row in rows:
                 dic_list.append(
@@ -30,10 +30,10 @@ class Contact():
             return []
 
     @path_set(path='SQL/contact')
-    def get_all(self, cur, conn, path):
+    def get_all(self, cur,  path):
 
         try:
-            rows = query(cur, conn, path, 'get_all')
+            rows = query(cur,  path, 'get_all')
             dic_list = []
             for row in rows:
                 dic_list.append(
@@ -45,20 +45,20 @@ class Contact():
             return []
 
     @path_set(path='SQL/contact')
-    def delete(self, row_id, cur, conn,path):
+    def delete(self, row_id, cur, path):
 
-        query( cur, conn,path, 'delete', vals=(row_id,))
+        query( cur, path, 'delete', vals=(row_id,))
 
     @path_set(path='SQL/contact')
-    def update(self, row_id, new_entry, cur, conn, path):
+    def update(self, row_id, new_entry, cur,  path):
 
         userid = new_entry['userid']
         contact_name = new_entry['name']
         contact_phone = new_entry['phone']
 
-        query(cur, conn, path, 'update', vals=(contact_name,
+        query(cur,  path, 'update', vals=(contact_name,
                                                           contact_phone, userid))
 
     @path_set(path='SQL/contact')
-    def clear_all(self, cur, conn, path):
-        query(cur, conn, path, 'truncate')
+    def clear_all(self, cur,  path):
+        query(cur,  path, 'truncate')

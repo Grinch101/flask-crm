@@ -8,16 +8,15 @@ class User():
         pass
 
     @path_set(path='SQL/user')
-    def add(self, client_name,email,password, cur, conn , path):
+    def add(self, client_name, email, password, cur,  path):
 
-
-        query(cur, conn,path, 'register', 
+        query(cur, path, 'register',
               vals=(client_name, email, password))
 
     @path_set(path='SQL/user')
-    def validate(self, email, password, cur, conn , path):
+    def validate(self, email, password, cur,  path):
 
-        rows = query(cur, conn,path, 'validate', vals=(email,))
+        rows = query(cur, path, 'validate', vals=(email,))
         # print(rows)
         if rows is None:
             return False
@@ -28,27 +27,27 @@ class User():
             return password == inquired_password
 
     @path_set(path='SQL/user')
-    def old_user(self, email, cur, conn,path):
+    def old_user(self, email, cur, path):
 
-        email_list = query(cur, conn,path, 'old_user')
+        email_list = query(cur, path, 'old_user')
         email_list = [x['email'] for x in email_list]
         return email in email_list
 
     @path_set(path='SQL/user')
-    def delete(self, userid,  cur, conn,path):
+    def delete(self, userid,  cur, path):
 
-        query(cur, conn,path,  'delete', vals=(userid,))
+        query(cur, path,  'delete', vals=(userid,))
 
     @path_set(path='SQL/user')
-    def find_userid_by_email(self, email,  cur, conn, path):
+    def find_userid_by_email(self, email,  cur,  path):
 
-        cur = query(cur, conn, path, 'userid_email', vals=(email,))
+        cur = query(cur,  path, 'userid_email', vals=(email,))
         return cur[0]['userid']
 
     @path_set(path='SQL/user')
-    def get_all(self, cur, conn, path):
+    def get_all(self, cur,  path):
 
-        rows = query(cur, conn, path, 'get_all')
+        rows = query(cur,  path, 'get_all')
         dic_list = []
         try:
             for row in rows:
@@ -61,17 +60,17 @@ class User():
             return []
 
     @path_set(path='SQL/user')
-    def update(self, userid, new_entry, cur, conn, path):
+    def update(self, userid, new_entry, cur,  path):
         email = new_entry['email']
         password = new_entry['password']
         client_name = new_entry['client_name']
 
-        query(cur, conn, path, 'update',
+        query(cur,  path, 'update',
               vals=(email, password, client_name))
 
     @path_set(path='SQL/user')
-    def find_val(self, userid, cur, conn, path):
-        value = query(cur, conn, path, 'find_val', vals=(userid,))
+    def find_val(self, userid, cur,  path):
+        value = query(cur,  path, 'find_val', vals=(userid,))
         # rows = self._query(User_queries.get_all)
         dic_list = []
         for row in value:
@@ -82,8 +81,8 @@ class User():
         return dic_list[0]
 
     @path_set(path='SQL/user')
-    def clear_all(self, cur, conn, path):
-        query(cur, conn, path, 'truncate')
+    def clear_all(self, cur,  path):
+        query(cur,  path, 'truncate')
 
     def __init__(self):
         pass

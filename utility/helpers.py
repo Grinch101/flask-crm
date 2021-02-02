@@ -23,7 +23,7 @@ def close_conn(cur, conn):
 
 
 
-def query(cur, conn, path, query_name,  vals=''):
+def query(cur, path, query_name,  vals=''):
 
     file_name = query_name+'.txt'
     path = Path(path) / file_name

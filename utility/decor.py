@@ -21,7 +21,7 @@ def sql_connection(func):
         cur , conn = open_conn()
         
         kwargs['cur'] = cur
-        kwargs['conn'] = conn
+        # kwargs['conn'] = conn
         output = func(  *args, **kwargs )
         close_conn(cur , conn)
         if output:
