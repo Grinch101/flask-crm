@@ -25,7 +25,7 @@ def close_conn(cur, conn):
 
 def query(cur, path, query_name,  vals=''):
 
-    file_name = query_name+'.txt'
+    file_name = query_name+'.sql'
     path = Path(path) / file_name
 
     with open(path, 'r') as f:
