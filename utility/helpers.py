@@ -5,7 +5,6 @@ from pathlib import Path
 from flask import g
 
 
-
 ########### Helpers to work with one connection #####################
 
 def open_conn(host='localhost', database='phonebook', user='postgres', password=1):
@@ -46,13 +45,12 @@ class get_cursor():
         conns = self.connections
         conn = conns.getconn()
         self.bag.append(conn)
-        cur = conn.cursor(cursor_factory = DictCursor)
+        cur = conn.cursor(cursor_factory=DictCursor)
         return cur
 
-
-    def run_and_fetch(self,query_text, vals,):
+    def run_and_fetch(self, query_text, vals=''):
         cursor = self.__enter__()
-        cursor.execute(query_text , vals)
+        cursor.execute(query_text, vals)
         try:
             return cursor.fetchall()
         except:
@@ -75,7 +73,6 @@ def query(path, query_name,  vals=''):
         f.close()
     cur = g.cur
     with cur:
-        rows = cur.run_and_fetch(query_text,  vals)
+        rows = cur.run_and_fetch(query_text,  vals=vals)
         if rows != 'no value to fetch':
             return rows
-
