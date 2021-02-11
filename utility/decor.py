@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for
+from flask import request, redirect, url_for, g
 from utility.helpers import close_conn , open_conn, query
 from functools import wraps
 
@@ -20,12 +20,13 @@ def sql_connection(func):
     def wrapper(*args, **kwargs):
         cur , conn = open_conn()
         
-        kwargs['cur'] = cur
-        # kwargs['conn'] = conn
-        output = func(  *args, **kwargs )
+        g.cur = cur
+        g.conn = conn
+        output = func(*args, **kwargs )
         close_conn(cur , conn)
         if output:
             return output
+
     
     return wrapper
 
