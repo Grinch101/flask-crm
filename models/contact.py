@@ -31,18 +31,9 @@ class Contact():
 
     @path_set(path='SQL/contact')
     def get_all(self, path):
-
-        try:
-            rows = query(path, 'get_all')
-            dic_list = []
-            for row in rows:
-                dic_list.append(
-                    {'client_name': row['client_name'],
-                     'name': row['contact_name'],
-                     'phone': row['contact_phone']})
-            return dic_list
-        except:
-            return []
+        dic_list = []
+        rows = query(path, 'get_all')
+        return rows
 
     @path_set(path='SQL/contact')
     def delete(self, row_id, path):
