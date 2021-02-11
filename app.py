@@ -148,10 +148,10 @@ def behind():
         userid = request.cookies.get('user_id')
         userid = int(userid)
         list2 = phonebook.find_book(userid)
-        list3 = users_handler.list
-        dic1 = phonebook.id_index
+        list3 = users_handler.get_all()
 
-        return render_template('behind-the-scene.html', dic1=dic1,
+
+        return render_template('behind-the-scene.html',
                                list1=list1,
                                list2=list2,
                                list3=list3)
