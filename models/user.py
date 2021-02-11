@@ -79,7 +79,7 @@ class User():
                     'password': row['passkey'],
                     'userid': row['userid']})
         return dic_list[0]
-
+        
     @path_set(path='SQL/user')
     def clear_all(self, path):
         query(path, 'truncate')
