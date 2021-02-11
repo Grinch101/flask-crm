@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g
 from models.contact import Contact
 from models.user import User
-from utility.decor import sql_connection, login_required, path_set
+from utility.decor import login_required, path_set, sql_pooling
 
 
 app = Flask(__name__)
@@ -26,11 +26,11 @@ users_handler = User()
 
 
 @app.route('/', methods=["GET"])
-@sql_connection
+@sql_pooling
 @login_required
 def index():
     userid = int(request.cookies.get('user_id'))
-    entry = users_handler.find_val(userid,   )
+    entry = users_handler.find_val(userid)
     username = entry['client_name']
     return render_template('index.html', username=username)
 
@@ -42,15 +42,15 @@ def login_form():
 
 
 @app.route('/login_check', methods=["POST"])
-@sql_connection
+@sql_pooling
 def login_check():
 
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
 
-    if users_handler.validate(email, password,   ):
+    if users_handler.validate(email, password):
 
-        userid = users_handler.find_userid_by_email(email,   )
+        userid = users_handler.find_userid_by_email(email)
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(userid))
         return response
@@ -68,17 +68,17 @@ def signup_form():
 
 
 @app.route('/signup', methods=["POST"])
-@sql_connection
+@sql_pooling
 def signup():
 
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
 
-    if not users_handler.old_user(email,   ):
+    if not users_handler.old_user(email):
 
-        users_handler.add( client_name, email, password,   )
-        userid = users_handler.find_userid_by_email(email,   )
+        users_handler.add( client_name, email, password)
+        userid = users_handler.find_userid_by_email(email)
 
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(userid))
@@ -89,7 +89,7 @@ def signup():
 
 
 @app.route('/saved', methods=["POST"])
-@sql_connection
+@sql_pooling
 @login_required
 def saved():
 
@@ -97,9 +97,9 @@ def saved():
     input_number = request.form['Number']
     userid = request.cookies.get('user_id')
     userid = int(userid)
-    entry = users_handler.find_val(userid,   )
+    entry = users_handler.find_val(userid)
     client_name = entry['client_name']
-    phonebook.add(userid, input_name, input_number,   )
+    phonebook.add(userid, input_name, input_number)
 
     flash(f'{input_number} for {input_name} has been saved')
 
@@ -107,24 +107,24 @@ def saved():
 
 
 @app.route('/table', methods=["GET"])
-@sql_connection
+@sql_pooling
 @login_required
 def table():
 
     userid = request.cookies.get('user_id')
     userid = int(userid)
-    contact_list = phonebook.find_book(userid,   )
+    contact_list = phonebook.find_book(userid)
 
     return render_template('list.html', mylist=contact_list)
 
 
 @app.route('/delete', methods=["POST"])
-@sql_connection
+@sql_pooling
 @login_required
 def delete():
 
-    id = int(request.form.get("DELETE"))
-    phonebook.delete(id,   )
+    uid = int(request.form.get("DELETE"))
+    phonebook.delete(uid)
     flash(f"ID:{id} Deleted")
 
     return redirect(url_for('table'))
@@ -140,7 +140,7 @@ def logout():
 
 
 @app.route('/behind-the-scene', methods=['GET'])
-@sql_connection
+@sql_pooling
 def behind():
 
     if request.cookies.get('user_id'):
