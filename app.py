@@ -1,15 +1,20 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g, session
 from models.contact import Contact
 from models.user import User
-from utility.decor import login_required, path_set, sql_pooling
-
+from utility.decor import login_required, path_set
+from utility.helpers import conn_pool
+from psycopg2.extras import DictCursor
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
+
+
+
+### Create a Global Connetion Pool:
+connections = conn_pool(1,10)
+
 #  injecting some functions to Jinja
-
-
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
@@ -18,15 +23,34 @@ def inject_func():
                 len=len)
 
 
-## initiate ###################
+###### before and after each request ########
+@app.before_request
+def open_conn():
+    global connections
+    conn = connections.getconn()
+    cursor = conn.cursor(cursor_factory = DictCursor)
+    g.cur = cursor
+    g.conn = conn
+
+
+@app.after_request
+def close_conn(response):
+    conn = g.conn
+    cur = g.cur
+    conn.commit()
+    cur.close()
+    global connections
+    connections.putconn(conn)
+    del g.cur
+    del g.conn
+    return response
+
+############## initiate models ############
 phonebook = Contact()
 users_handler = User()
 
-## View Function ##############
-
-
+############## View Function ##############
 @app.route('/', methods=["GET"])
-@sql_pooling
 @login_required
 def index():
     userid = int(request.cookies.get('user_id'))
@@ -42,7 +66,6 @@ def login_form():
 
 
 @app.route('/login_check', methods=["POST"])
-@sql_pooling
 def login_check():
 
     email = request.form.get("inputEmail")
@@ -68,7 +91,6 @@ def signup_form():
 
 
 @app.route('/signup', methods=["POST"])
-@sql_pooling
 def signup():
 
     email = request.form.get("inputEmail")
@@ -89,7 +111,6 @@ def signup():
 
 
 @app.route('/saved', methods=["POST"])
-@sql_pooling
 @login_required
 def saved():
 
@@ -107,7 +128,6 @@ def saved():
 
 
 @app.route('/table', methods=["GET"])
-@sql_pooling
 @login_required
 def table():
 
@@ -119,7 +139,6 @@ def table():
 
 
 @app.route('/table', methods=["POST"])
-@sql_pooling
 @login_required
 def delete():
 
@@ -173,7 +192,6 @@ def logout():
 
 
 @app.route('/behind-the-scene', methods=['GET'])
-@sql_pooling
 def behind():
 
     if request.cookies.get('user_id'):
