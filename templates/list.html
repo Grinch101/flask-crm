@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    
+
 <table class="table">
   <thead>
     <tr>
@@ -12,40 +12,41 @@
       <th scope="col">Name</th>
       <th scope="col">Number</th>
       <th scope="col">Delete</th>
+      <th scope="col">Comment</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-    <form method="POST" action="{{ url_for('delete') }}" >
-    {% for i , dic in enumerate(mylist , start=1) %}
-
-
+      {% for i , dic in enumerate(mylist , start=1) %}
       <td> {{i}} </td>
-
       <td>{{dic['client_name']}}</td>
       <td>{{dic['name']}}</td>
       <td>{{dic['phone']}}</td>
-      <td> 
-       <button 
-        name="DELETE" 
-        value={{dic['id']}} 
-        type="submit" 
-        class="btn btn-danger">
-        Delete
+      <form method="POST" action="{{ url_for('delete') }}">
+        <td>
+          <button name="DELETE" value={{dic['id']}} type="submit" class="btn btn-danger">
+            Delete
+          </button>
+        </td>
+      </form>
+      <form action="" method="">
+      <td>
+        <button name="COMMENT" value={{dic['id']}} type="submit" class="btn btn-info">
+          Comment
         </button>
+        </form>
+      </td>
     </tr>
-   {% endfor %}</form></td>
+    {% endfor %}
+
   </tbody>
 </table>
 
-    {% if get_flashed_messages()[0] %}
-    <div class="alert alert-success" role="alert">
-      <h4 class="alert-heading">Done!</h4>
-      <p>{{get_flashed_messages()[0]}}.</p>
-    </div>
-    {% endif %}
+{% if get_flashed_messages()[0] %}
+<div class="alert alert-success" role="alert">
+  <h4 class="alert-heading">Done!</h4>
+  <p>{{get_flashed_messages()[0]}}.</p>
+</div>
+{% endif %}
 
 {% endblock content %}
-
-
-

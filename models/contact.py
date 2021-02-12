@@ -15,10 +15,9 @@ class Contact():
 
     @path_set(path='SQL/contact')
     def find_book(self, userid, path):
-
+        rows = query( path, 'find', vals=(userid,))
+        dic_list = []
         try:
-            rows = query( path, 'find', vals=(userid,))
-            dic_list = []
             for row in rows:
                 dic_list.append(
                     {'client_name': row['client_name'],
@@ -29,15 +28,24 @@ class Contact():
         except:
             return []
 
+    # @path_set(path='SQL/contact')
+    # def find_row(self, row_id , path):
+    #     rows = query(path , 'row_info' , vals=(row_id,))
+    #     return rows[0]
+
+
+    # @path_set(path='SQL/contact')
+    # def leave_comment(self,comment, posting_date, row_id , contact_name, path):
+    #     query(path , 'comment' , vals=(comment,posting_date,row_id, contact_name))
+
+
     @path_set(path='SQL/contact')
     def get_all(self, path):
-        dic_list = []
         rows = query(path, 'get_all')
         return rows
 
     @path_set(path='SQL/contact')
     def delete(self, row_id, path):
-
         query(path, 'delete', vals=(row_id,))
 
     @path_set(path='SQL/contact')

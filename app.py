@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g
+from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g, session
 from models.contact import Contact
 from models.user import User
 from utility.decor import login_required, path_set, sql_pooling
@@ -118,7 +118,7 @@ def table():
     return render_template('list.html', mylist=contact_list)
 
 
-@app.route('/delete', methods=["POST"])
+@app.route('/table', methods=["POST"])
 @sql_pooling
 @login_required
 def delete():
@@ -129,6 +129,39 @@ def delete():
 
     return redirect(url_for('table'))
 
+# @app.route('/comment', methods=['POST'])
+# @sql_pooling
+# @login_required
+# def comment():
+#     uid = int(request.form.get("COMMENT"))
+#     row = phonebook.find_row(uid)
+#     contact_name = row['contact_name']
+#     userid = request.cookies.get('user_id')
+#     userid = int(userid)
+#     entry = users_handler.find_val(userid)
+#     client_name = entry['client_name']
+
+#     session['contact_name'] = contact_name
+#     session['userid'] = userid
+#     session['row_id'] = uid
+
+#     return render_template('comment.html' , contact_name = contact_name , client_name = client_name)
+    
+
+# @app.route('/save_commnet', methods=['POST'])
+# @sql_pooling
+# @login_required
+# def save_comment():
+
+#     text = request.form.get('comment')
+#     date = request.form.get('date')
+
+#     contact_name = session['contact_name']
+#     row_id = session['row_id']
+
+#     phonebook.leave_comment(text , date, row_id , contact_name)
+
+#     return redirect(url_for('table'))
 
 @app.route('/logout', methods=['POST'])
 @login_required
