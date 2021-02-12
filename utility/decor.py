@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, g
-from utility.helpers import query,  get_cursor, close_conn
+from utility.helpers import query
 from functools import wraps
 
 
