@@ -18,9 +18,7 @@ class User():
 
         rows = query(path, 'validate', vals=(email,))
         # print(rows)
-        if rows is None:
-            return False
-        elif rows == []:
+        if rows is None or rows==[]:
             return False
         else:
             inquired_password = rows[0]['passkey']
@@ -30,8 +28,11 @@ class User():
     def old_user(self, email, path):
 
         email_list = query(path, 'old_user')
-        email_list = [x['email'] for x in email_list]
-        return email in email_list
+        for record in email_list:
+            if record == email:
+                return True
+            else:
+                return False
 
     @path_set(path='SQL/user')
     def delete(self, userid, path):
@@ -41,23 +42,24 @@ class User():
     @path_set(path='SQL/user')
     def find_userid_by_email(self, email, path):
 
-        cur = query(path, 'userid_email', vals=(email,))
-        return cur[0]['userid']
+        rows = query(path, 'userid_email', vals=(email,))
+        return rows[0]['userid']
 
     @path_set(path='SQL/user')
     def get_all(self, path):
 
         rows = query(path, 'get_all')
-        dic_list = []
-        try:
-            for row in rows:
-                dic_list.append(
-                    {'client_name': row['client_name'],
-                     'password': row['passkey'],
-                     'userid': row['userid']})
-            return dic_list
-        except:
-            return []
+        return rows
+        # dic_list = []
+        # try:
+        #     for row in rows:
+        #         dic_list.append(
+        #             {'client_name': row['client_name'],
+        #              'password': row['passkey'],
+        #              'userid': row['userid']})
+        #     return dic_list
+        # except:
+        #     return []
 
     @path_set(path='SQL/user')
     def update(self, userid, new_entry, path):
@@ -70,15 +72,16 @@ class User():
 
     @path_set(path='SQL/user')
     def find_val(self, userid, path):
-        value = query(path, 'find_val', vals=(userid,))
+        rows = query(path, 'find_val', vals=(userid,))
+        return rows[0]
         # rows = self._query(User_queries.get_all)
-        dic_list = []
-        for row in value:
-            dic_list.append(
-                {'client_name': row['client_name'],
-                    'password': row['passkey'],
-                    'userid': row['userid']})
-        return dic_list[0]
+        # dic_list = []
+        # for row in value:
+        #     dic_list.append(
+        #         {'client_name': row['client_name'],
+        #             'password': row['passkey'],
+        #             'userid': row['userid']})
+        # return dic_list[0]
         
     @path_set(path='SQL/user')
     def clear_all(self, path):
