@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, flash, redirect, url_for, mak
 from models.contact import Contact
 from models.user import User
 from utility.decor import login_required, path_set
-from utility.helpers import conn_pool
+from utility.helpers import conn_pool, query
 from psycopg2.extras import DictCursor
+from psycopg2 import DatabaseError, DataError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
@@ -31,30 +32,75 @@ def open_conn():
     cursor = conn.cursor(cursor_factory = DictCursor)
     g.cur = cursor
     g.conn = conn
+    g.error = False
 
 
 @app.after_request
 def close_conn(response):
-    conn = g.conn
+    
+    if g.conn is not None:    
+        conn = g.conn
+        cur = g.cur
+        conn.commit()
+        cur.close()
+        global connections
+        connections.putconn(conn)
+        return response
+    else:
+        return response
+
+
+# @app.teardown_request
+# def tear(error=None):
+#     if g.conn is not None:
+#         cur = g.cur
+#         conn = g.conn
+#         conn.rollback()
+#         print('rolled back')
+#         cur.close()
+#         connections = globals()['connections']
+#         connections.putconn(conn)
+#         del g.conn
+
+########### Error handler ###########
+@app.errorhandler(DataError)
+@app.errorhandler(DatabaseError)
+def roll_back_changes(error):
     cur = g.cur
-    conn.commit()
+    conn = g.conn
     cur.close()
-    global connections
+    conn.rollback()
+    connections = globals()['connections']
     connections.putconn(conn)
-    del g.cur
-    del g.conn
-    return response
+    g.conn = None
+    return '<h1> ERROR </h1>'
+
+
 
 ############## initiate models ############
 phonebook = Contact()
 users_handler = User()
 
 ############## View Function ##############
+
+@app.route('/debug', methods=["GET"])
+def debug():
+    email = "inputEmail"
+    password = "inputPassword"
+    client_name = "client_name"
+    users_handler.add( client_name, email, password)
+
+
+    query('SQL/user', 'fake_query', (1,))
+    return render_template('comment.html', error='error')
+
+
+
 @app.route('/', methods=["GET"])
 @login_required
 def index():
     userid = int(request.cookies.get('user_id'))
-    entry = users_handler.find_val(userid)
+    entry = users_handler.find_val_by_id(userid)
     username = entry['client_name']
     return render_template('index.html', username=username)
 
@@ -118,7 +164,7 @@ def saved():
     input_number = request.form['Number']
     userid = request.cookies.get('user_id')
     userid = int(userid)
-    entry = users_handler.find_val(userid)
+    entry = users_handler.find_val_by_id(userid)
     client_name = entry['client_name']
     phonebook.add(userid, input_name, input_number)
 
@@ -138,49 +184,15 @@ def table():
     return render_template('list.html', mylist=contact_list)
 
 
-@app.route('/table', methods=["POST"])
+@app.route('/delete/contacts/<id>', methods=["POST"])
 @login_required
-def delete():
+def delete(id):
 
-    uid = int(request.form.get("DELETE"))
-    phonebook.delete(uid)
+    phonebook.delete(id)
     flash(f"ID:{id} Deleted")
 
-    return redirect(url_for('table'))
+    return make_response(redirect(url_for('table')))
 
-# @app.route('/comment', methods=['POST'])
-# @sql_pooling
-# @login_required
-# def comment():
-#     uid = int(request.form.get("COMMENT"))
-#     row = phonebook.find_row(uid)
-#     contact_name = row['contact_name']
-#     userid = request.cookies.get('user_id')
-#     userid = int(userid)
-#     entry = users_handler.find_val(userid)
-#     client_name = entry['client_name']
-
-#     session['contact_name'] = contact_name
-#     session['userid'] = userid
-#     session['row_id'] = uid
-
-#     return render_template('comment.html' , contact_name = contact_name , client_name = client_name)
-    
-
-# @app.route('/save_commnet', methods=['POST'])
-# @sql_pooling
-# @login_required
-# def save_comment():
-
-#     text = request.form.get('comment')
-#     date = request.form.get('date')
-
-#     contact_name = session['contact_name']
-#     row_id = session['row_id']
-
-#     phonebook.leave_comment(text , date, row_id , contact_name)
-
-#     return redirect(url_for('table'))
 
 @app.route('/logout', methods=['POST'])
 @login_required
