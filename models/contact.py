@@ -1,5 +1,6 @@
 from utility.helpers import query
 from utility.decor import path_set
+from flask import g
 
 
 ####
@@ -15,8 +16,9 @@ class Contact():
 
     @path_set(path='SQL/contact')
     def find_book(self, userid, path):
-        rows = query(path, 'find', vals=(userid,))
-        # return rows
+        query(path, 'find', vals=(userid,))
+        cur = g.cur
+        rows = cur.fetchall()
         dic_list = []
         for row in rows:
             dic_list.append(
@@ -37,8 +39,17 @@ class Contact():
 
     @path_set(path='SQL/contact')
     def get_all(self, path):
-        rows = query(path, 'get_all')
-        return rows
+        query(path, 'get_all')
+        cur = g.cur
+        rows = cur.fetchall()
+        dic_list = []
+        for row in rows:
+            dic_list.append(
+                    {'name': row['contact_name'],
+                    'phone': row['contact_phone'],
+                    'userid': row['userid']})
+        return dic_list
+        
 
     @path_set(path='SQL/contact')
     def delete(self, row_id, path):

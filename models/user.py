@@ -1,5 +1,7 @@
 from utility.helpers import query
 from utility.decor import path_set
+from flask import g
+
 
 
 ####
@@ -16,18 +18,22 @@ class User():
     @path_set(path='SQL/user')
     def validate(self, email, password, path):
 
-        rows = query(path, 'validate', vals=(email,))
-        # print(rows)
-        if rows is None or rows==[]:
+        query(path, 'validate', vals=(email,))
+        cur = g.cur 
+        row = cur.fetchone()
+
+        if row is None or row==[]:
             return False
         else:
-            inquired_password = rows[0]['passkey']
+            inquired_password = row['passkey']
             return password == inquired_password
 
     @path_set(path='SQL/user')
     def old_user(self, email, path):
 
-        email_list = query(path, 'old_user')
+        query(path, 'old_user')
+        cur = g.cur 
+        email_list = cur.fetchall()
         for record in email_list:
             if record == email:
                 return True
@@ -42,24 +48,26 @@ class User():
     @path_set(path='SQL/user')
     def find_userid_by_email(self, email, path):
 
-        rows = query(path, 'userid_email', vals=(email,))
-        return rows[0]['userid']
+        query(path, 'userid_email', vals=(email,))
+        cur = g.cur
+        rows = cur.fetchone()
+        return rows['userid']
 
     @path_set(path='SQL/user')
     def get_all(self, path):
 
-        rows = query(path, 'get_all')
-        return rows
-        # dic_list = []
-        # try:
-        #     for row in rows:
-        #         dic_list.append(
-        #             {'client_name': row['client_name'],
-        #              'password': row['passkey'],
-        #              'userid': row['userid']})
-        #     return dic_list
-        # except:
-        #     return []
+        query(path, 'get_all')
+        cur  = g.cur
+        rows  = cur.fetchall()
+        dic_list = []
+        for row in rows:
+            dic_list.append(
+                {'client_name': row['client_name'],
+                    'email': row['email'],
+                    'password': row['passkey'],
+                    'userid': row['userid']})
+        return dic_list
+        
 
     @path_set(path='SQL/user')
     def update(self, userid, new_entry, path):
@@ -71,17 +79,15 @@ class User():
               vals=(email, password, client_name))
 
     @path_set(path='SQL/user')
-    def find_val(self, userid, path):
-        rows = query(path, 'find_val', vals=(userid,))
-        return rows[0]
-        # rows = self._query(User_queries.get_all)
-        # dic_list = []
-        # for row in value:
-        #     dic_list.append(
-        #         {'client_name': row['client_name'],
-        #             'password': row['passkey'],
-        #             'userid': row['userid']})
-        # return dic_list[0]
+    def find_val_by_id(self, userid, path):
+        query(path, 'find_val_by_id', vals=(userid,))
+        cur = g.cur
+        row = cur.fetchone()
+        entry = {'client_name': row['client_name'],
+                    'email': row['email'],
+                    'password': row['passkey'],
+                    'userid': row['userid']}
+        return row
         
     @path_set(path='SQL/user')
     def clear_all(self, path):
