@@ -12,7 +12,7 @@
       <th scope="col">Name</th>
       <th scope="col">Number</th>
       <th scope="col">Delete</th>
-      <th scope="col">Comment</th>
+      <th scope="col">Log</th>
     </tr>
   </thead>
   <tbody>
@@ -22,7 +22,7 @@
       <td>{{dic['client_name']}}</td>
       <td>{{dic['name']}}</td>
       <td>{{dic['phone']}}</td>
-      <form method="POST" action="{{ url_for('delete') }}">
+      <form method="POST" action="{{url_for('delete', id=dic['id']) }}">
         <td>
           <button name="DELETE" value={{dic['id']}} type="submit" class="btn btn-danger">
             Delete
@@ -31,8 +31,8 @@
       </form>
       <form action="" method="">
       <td>
-        <button name="COMMENT" value={{dic['id']}} type="submit" class="btn btn-info">
-          Comment
+        <button name="Log" value={{dic['id']}} type="submit" class="btn btn-info">
+          Log
         </button>
         </form>
       </td>
