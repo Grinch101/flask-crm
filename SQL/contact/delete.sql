@@ -1,1 +1,1 @@
-DELETE FROM contacts WHERE row_id = %s
+DELETE FROM contacts WHERE id = %s

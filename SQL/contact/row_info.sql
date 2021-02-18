@@ -1,1 +1,0 @@
-SELECT * FROM contacts WHERE row_id = %s

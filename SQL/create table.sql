@@ -10,11 +10,11 @@ CREATE TABLE users (
 CREATE TABLE contacts(
 	contact_name varchar(20) NOT NULL,
 	contact_phone VARCHAR(20) NOT NULL,
-	row_id SERIAL NOT NULL,
-	userid INT NOT NULL,
-	PRIMARY KEY (row_id),
+	id SERIAL NOT NULL,
+	USERID INT NOT NULL,
+	PRIMARY KEY (id),
 
-	FOREIGN KEY (userid) REFERENCES users (userid) ON DELETE CASCADE
+	FOREIGN KEY (USERID) REFERENCES users (USERID) ON DELETE CASCADE
 );
 
 
