@@ -31,14 +31,10 @@ class User():
     @path_set(path='SQL/user')
     def old_user(self, email, path):
 
-        query(path, 'old_user')
+        query(path, 'old_user' , vals=(email,))
         cur = g.cur 
-        email_list = cur.fetchall()
-        for record in email_list:
-            if record == email:
-                return True
-            else:
-                return False
+        appear_num = cur.fetchall()
+        return appear_num != 0
 
     @path_set(path='SQL/user')
     def delete(self, userid, path):
