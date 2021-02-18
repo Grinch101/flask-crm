@@ -16,7 +16,7 @@ class Contact():
 
     @path_set(path='SQL/contact')
     def find_book(self, userid, path):
-        query(path, 'find', vals=(userid,))
+        query(path, 'get_by_id', vals=(userid,))
         cur = g.cur
         rows = cur.fetchall()
         dic_list = []

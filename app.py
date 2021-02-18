@@ -50,18 +50,6 @@ def close_conn(response):
         return response
 
 
-# @app.teardown_request
-# def tear(error=None):
-#     if g.conn is not None:
-#         cur = g.cur
-#         conn = g.conn
-#         conn.rollback()
-#         print('rolled back')
-#         cur.close()
-#         connections = globals()['connections']
-#         connections.putconn(conn)
-#         del g.conn
-
 ########### Error handler ###########
 @app.errorhandler(DataError)
 @app.errorhandler(DatabaseError)
@@ -73,7 +61,8 @@ def roll_back_changes(error):
     connections = globals()['connections']
     connections.putconn(conn)
     g.conn = None
-    return '<h1> ERROR </h1>'
+    del g.cur
+    return render_template('error.html' , error = error)
 
 
 
@@ -92,7 +81,7 @@ def debug():
 
 
     query('SQL/user', 'fake_query', (1,))
-    return render_template('comment.html', error='error')
+    return 'fake query ran!'
 
 
 
