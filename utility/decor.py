@@ -15,14 +15,3 @@ def login_required(func):
 
             return redirect(url_for(('login_form')))
     return wrap
-
-
-######## another love making with decorator concept! :)
-def path_set(path):
-    def query_decorator(func):
-        def wrapper(*args, **kwargs):
-
-            kwargs['path'] = path
-            return func(*args, **kwargs)
-        return wrapper
-    return query_decorator
