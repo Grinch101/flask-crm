@@ -3,58 +3,40 @@ from utility.decor import path_set
 from flask import g
 
 
-
 ####
 class User():
     def __init__(self):
-        pass
+        self.path='SQL/user'
 
-    @path_set(path='SQL/user')
-    def add(self, client_name, email, password, path):
-
-        query(path, 'register',
+    def add(self, client_name, email, password):
+        query(self.path, 'register',
               vals=(client_name, email, password))
 
-    @path_set(path='SQL/user')
-    def validate(self, email, password, path):
+    def validate(self, email, password):
+        query(self.path, 'validate', vals=(email,))
+        row = g.cur.fetchone()
 
-        query(path, 'validate', vals=(email,))
-        cur = g.cur 
-        row = cur.fetchone()
-
-        if row is None or row==[]:
+        if row is None or row == []:
             return False
         else:
-            inquired_password = row['passkey']
-            return password == inquired_password
+            return password == row['passkey']
 
-    @path_set(path='SQL/user')
-    def old_user(self, email, path):
-
-        query(path, 'old_user' , vals=(email,))
-        cur = g.cur 
-        appear_num = cur.fetchall()
+    def old_user(self, email):
+        query(self.path, 'old_user', vals=(email,))
+        appear_num = g.cur.fetchall()
         return appear_num != 0
 
-    @path_set(path='SQL/user')
-    def delete(self, userid, path):
+    def delete(self, userid):
+        query(self.path,  'delete', vals=(userid,))
 
-        query(path,  'delete', vals=(userid,))
+    def find_by_email(self, email):
+        query(self.path, 'userid_email', vals=(email,))
+        rows = g.cur.fetchone()
+        return rows
 
-    @path_set(path='SQL/user')
-    def find_userid_by_email(self, email, path):
-
-        query(path, 'userid_email', vals=(email,))
-        cur = g.cur
-        rows = cur.fetchone()
-        return rows['userid']
-
-    @path_set(path='SQL/user')
-    def get_all(self, path):
-
-        query(path, 'get_all')
-        cur  = g.cur
-        rows  = cur.fetchall()
+    def get_all(self):
+        query(self.path, 'get_all')
+        rows = g.cur.fetchall()
         dic_list = []
         for row in rows:
             dic_list.append(
@@ -63,28 +45,23 @@ class User():
                     'password': row['passkey'],
                     'userid': row['userid']})
         return dic_list
-        
 
-    @path_set(path='SQL/user')
-    def update(self, userid, new_entry, path):
+    def update(self, userid, new_entry):
         email = new_entry['email']
         password = new_entry['password']
         client_name = new_entry['client_name']
 
-        query(path, 'update',
+        query(self.path, 'update',
               vals=(email, password, client_name))
 
-    @path_set(path='SQL/user')
-    def find_val_by_id(self, userid, path):
-        query(path, 'find_val_by_id', vals=(userid,))
-        cur = g.cur
-        row = cur.fetchone()
+    def find_val_by_id(self, userid):
+        query(self.path, 'find_val_by_id', vals=(userid,))
+        row = g.cur.fetchone()
         entry = {'client_name': row['client_name'],
-                    'email': row['email'],
-                    'password': row['passkey'],
-                    'userid': row['userid']}
+                 'email': row['email'],
+                 'password': row['passkey'],
+                 'userid': row['userid']}
         return row
-        
-    @path_set(path='SQL/user')
-    def clear_all(self, path):
-        query(path, 'truncate')
+
+    def clear_all(self):
+        query(self.path, 'truncate')
