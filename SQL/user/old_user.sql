@@ -1,1 +1,1 @@
-SELECT COUNT(DISTINCT email) FROM users WHERE email = %s;
+SELECT COUNT(email) FROM users WHERE email = %s;
