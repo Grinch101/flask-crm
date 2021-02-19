@@ -1,1 +1,0 @@
-SELECT userid FROM users WHERE email = %s

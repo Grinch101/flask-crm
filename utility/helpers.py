@@ -6,7 +6,8 @@ from flask import g
 
 
 ##### Create Connection pool ######
-def conn_pool(minconn, maxconn, / , host='localhost', database='phonebook', user='postgres', password=1):
+def conn_pool(minconn, maxconn, /, host='localhost', database='phonebook', user='postgres', password=1):
+    
     return ThreadedConnectionPool(minconn,
                                   maxconn,
                                   host=host,
@@ -16,13 +17,12 @@ def conn_pool(minconn, maxconn, / , host='localhost', database='phonebook', user
 
 
 ############ query func  ##########
-def query(path, query_name, vals=''):
+def query(query, vals=''):
 
-    file_name = query_name+'.sql'
-    path = Path(path) / file_name
+    query = "sql/" + query + ".sql"
+    path = Path(query)
 
     with open(path, 'r') as f:
         query_text = str(f.read())
 
-    cur = g.cur
-    cur.execute(query_text,  vals)
+    g.cur.execute(query_text, vals)

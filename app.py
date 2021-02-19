@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g
 from models.contact import Contact
 from models.user import User
-from utility.decor import login_required, path_set
+from utility.decor import login_required
 from utility.helpers import conn_pool, query
 from psycopg2.extras import DictCursor
 from psycopg2 import DatabaseError, DataError
@@ -28,10 +28,8 @@ def inject_func():
 @app.before_request
 def open_conn():
     global connections
-    conn = connections.getconn()
-    cursor = conn.cursor(cursor_factory = DictCursor)
-    g.cur = cursor
-    g.conn = conn
+    g.conn = connections.getconn()
+    g.cur = g.conn.cursor(cursor_factory = DictCursor)
 
 
 
@@ -71,8 +69,8 @@ users_handler = User()
 @login_required
 def index():
 
-    userid = int(request.cookies.get('user_id'))
-    entry = users_handler.find_val_by_id(userid)
+    user_id = int(request.cookies.get('user_id'))
+    entry = users_handler.find_by_id(user_id)
     username = entry['client_name']
     return render_template('index.html', username=username)
 
@@ -92,9 +90,9 @@ def login_check():
 
     if users_handler.validate(email, password):
 
-        userid = users_handler.find_by_email(email)['userid']
+        user_id = users_handler.find_by_email(email)['id']
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('user_id', str(userid))
+        response.set_cookie('user_id', str(user_id))
         return response
 
     else:
@@ -119,10 +117,10 @@ def signup():
     if not users_handler.old_user(email):
 
         users_handler.add( client_name, email, password)
-        userid = users_handler.find_userid_by_email(email)
+        user_id = users_handler.find_by_email(email)['id']
 
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('user_id', str(userid))
+        response.set_cookie('user_id', str(user_id))
         return response
     else:
         flash('Email in use, please login')
@@ -135,11 +133,11 @@ def saved():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    userid = request.cookies.get('user_id')
-    userid = int(userid)
-    entry = users_handler.find_val_by_id(userid)
+    user_id = request.cookies.get('user_id')
+    user_id = int(user_id)
+    entry = users_handler.find_by_id(user_id)
     client_name = entry['client_name']
-    phonebook.add(userid, input_name, input_number)
+    phonebook.add(user_id, input_name, input_number)
 
     flash(f'{input_number} for {input_name} has been saved')
 
@@ -150,9 +148,9 @@ def saved():
 @login_required
 def table():
 
-    userid = request.cookies.get('user_id')
-    userid = int(userid)
-    contact_list = phonebook.find_by_user(userid)
+    user_id = request.cookies.get('user_id')
+    user_id = int(user_id)
+    contact_list = phonebook.find_by_user(user_id)
 
     return render_template('list.html', mylist=contact_list)
 
@@ -181,9 +179,9 @@ def behind():
 
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
-        userid = request.cookies.get('user_id')
-        userid = int(userid)
-        list2 = phonebook.find_by_user(userid)
+        user_id = request.cookies.get('user_id')
+        user_id = int(user_id)
+        list2 = phonebook.find_by_user(user_id)
         list3 = users_handler.get_all()
 
 

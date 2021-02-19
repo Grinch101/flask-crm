@@ -1,20 +1,19 @@
 from utility.helpers import query
-from utility.decor import path_set
 from flask import g
 
 
 ####
 class Contact():
     def __init__(self):
-        self.path = 'SQL/contact'
+        pass
 
-    def add(self, userid, contact_name, contact_phone):
+    def add(self, user_id, contact_name, contact_phone):
 
-        query(self.path, 'insert',
-              vals=(userid, contact_name, contact_phone))
+        query('contact/insert',
+              vals=(user_id, contact_name, contact_phone))
 
-    def find_by_user(self, userid):
-        query(self.path, 'get_by_id', vals=(userid,))
+    def find_by_user(self, user_id):
+        query('contact/get_by_id', vals=(user_id,))
         rows = g.cur.fetchall()
         dic_list = []
         for row in rows:
@@ -26,27 +25,27 @@ class Contact():
         return dic_list
 
     def get_all(self):
-        query(self.path, 'get_all')
+        query('contact/get_all')
         rows = g.cur.fetchall()
         dic_list = []
         for row in rows:
             dic_list.append(
                 {'name': row['contact_name'],
                  'phone': row['contact_phone'],
-                 'userid': row['userid']})
+                 'user_id': row['user_id']})
         return dic_list
 
     def delete(self, row_id):
-        query(self.path, 'delete', vals=(row_id,))
+        query('contact/delete', vals=(row_id,))
 
     def update(self, row_id, new_entry):
 
-        userid = new_entry['userid']
+        user_id = new_entry['user_id']
         contact_name = new_entry['name']
         contact_phone = new_entry['phone']
 
-        query(self.path, 'update', vals=(contact_name,
-                                         contact_phone, userid))
+        query('contact/update', vals=(contact_name,
+                                      contact_phone, user_id))
 
     def clear_all(self):
-        query(self.path, 'truncate')
+        query('contact/truncate')

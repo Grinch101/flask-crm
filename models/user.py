@@ -1,19 +1,18 @@
 from utility.helpers import query
-from utility.decor import path_set
 from flask import g
 
 
 ####
 class User():
     def __init__(self):
-        self.path='SQL/user'
+        pass
 
     def add(self, client_name, email, password):
-        query(self.path, 'register',
+        query('user/register',
               vals=(client_name, email, password))
 
     def validate(self, email, password):
-        query(self.path, 'validate', vals=(email,))
+        query('user/validate', vals=(email,))
         row = g.cur.fetchone()
 
         if row is None or row == []:
@@ -22,20 +21,21 @@ class User():
             return password == row['passkey']
 
     def old_user(self, email):
-        query(self.path, 'old_user', vals=(email,))
-        appear_num = g.cur.fetchall()
-        return appear_num != 0
+        query('user/find_by_email', vals=(email,))
+        row = g.cur.fetchall()
+        if row is None or row == []:
+            return False
 
-    def delete(self, userid):
-        query(self.path,  'delete', vals=(userid,))
+    def delete(self, user_id):
+        query('user/delete', vals=(user_id,))
 
     def find_by_email(self, email):
-        query(self.path, 'userid_email', vals=(email,))
+        query('user/find_by_email', vals=(email,))
         rows = g.cur.fetchone()
         return rows
 
     def get_all(self):
-        query(self.path, 'get_all')
+        query('user/get_all')
         rows = g.cur.fetchall()
         dic_list = []
         for row in rows:
@@ -43,25 +43,25 @@ class User():
                 {'client_name': row['client_name'],
                     'email': row['email'],
                     'password': row['passkey'],
-                    'userid': row['userid']})
+                    'user_id': row['id']})
         return dic_list
 
-    def update(self, userid, new_entry):
+    def update(self, user_id, new_entry):
         email = new_entry['email']
         password = new_entry['password']
         client_name = new_entry['client_name']
 
-        query(self.path, 'update',
+        query('user/update',
               vals=(email, password, client_name))
 
-    def find_val_by_id(self, userid):
-        query(self.path, 'find_val_by_id', vals=(userid,))
+    def find_by_id(self, user_id):
+        query('user/find_by_id', vals=(user_id,))
         row = g.cur.fetchone()
         entry = {'client_name': row['client_name'],
                  'email': row['email'],
                  'password': row['passkey'],
-                 'userid': row['userid']}
+                 'user_id': row['id']}
         return row
 
     def clear_all(self):
-        query(self.path, 'truncate')
+        query('user/truncate')
