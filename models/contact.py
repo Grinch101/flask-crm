@@ -45,17 +45,15 @@ class Contact():
 
         query('contact/delete', vals=(row_id,))
 
+    def update(self, row_id, new_entry):
 
-    def update_phone(self, row_id, new_phone):
+        row_id = new_entry['id']
+        contact_name = new_entry['name']
+        contact_phone = new_entry['phone']
 
-        query('contact/update_phone', vals=(new_phone, row_id))
-
-
-    def update_name(self, row_id, new_name):
-
-        query('contact/update_name', vals=(new_name, row_id))
+        query('contact/update', vals=(contact_name,
+                                      contact_phone, row_id))
 
 
     def clear_all(self):
-
         query('contact/truncate')

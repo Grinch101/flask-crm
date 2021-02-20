@@ -59,26 +59,18 @@ class User():
         return dic_list
 
 
-    def update_email(self, row_id, email):
+    def update(self, row_id, new_entry):
 
-        query('user/update_email',
-              vals=(email, row_id))
+        email = new_entry['email']
+        password = new_entry['password']
+        client_name = new_entry['client_name']
 
-
-    def update_password(self, row_id, password):
-
-        query('user/update_password',
-              vals=(password, row_id))
-
-
-    def update_client_name(self, row_id, client_name):
-
-        query('user/update_client_name',
-              vals=(client_name, row_id))
+        query('user/update',
+              vals=(email, password, client_name, row_id))
 
 
     def find_by_id(self, user_id):
-
+        
         query('user/find_by_id', vals=(user_id,))
         row = g.cur.fetchone()
         entry = {'client_name': row['client_name'],
