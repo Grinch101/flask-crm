@@ -1,1 +1,0 @@
-SELECT passkey FROM users WHERE email = %s
