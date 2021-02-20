@@ -1,1 +1,0 @@
-UPDATE users SET email = %s WHERE id = %s

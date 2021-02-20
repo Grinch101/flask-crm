@@ -1,1 +1,6 @@
-SELECT * FROM users where id = %s
+SELECT
+    *
+FROM
+    users
+where
+    id = % s

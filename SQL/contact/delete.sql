@@ -1,1 +1,4 @@
-DELETE FROM contacts WHERE id = %s
+DELETE FROM
+    contacts
+WHERE
+    id = % s

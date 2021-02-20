@@ -1,1 +1,4 @@
-SELECT * FROM contacts
+SELECT
+    *
+FROM
+    contacts

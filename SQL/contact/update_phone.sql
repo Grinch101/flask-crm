@@ -1,1 +1,0 @@
-UPDATE contacts SET contact_phone = %s WHERE id = %s

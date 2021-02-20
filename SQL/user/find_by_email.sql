@@ -1,1 +1,6 @@
-SELECT * FROM users WHERE email = %s
+SELECT
+    *
+FROM
+    users
+WHERE
+    email = % s

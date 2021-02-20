@@ -1,1 +1,4 @@
-DELETE FROM users WHERE users.id = %s;
+DELETE FROM
+    users
+WHERE
+    users.id = % s;

@@ -1,1 +1,0 @@
-UPDATE users SET client_name = %s WHERE id = %s

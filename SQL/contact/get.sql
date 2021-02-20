@@ -1,1 +1,6 @@
-SELECT * FROM contacts WHERE id = %s
+SELECT
+    *
+FROM
+    contacts
+WHERE
+    id = % s
