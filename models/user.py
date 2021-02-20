@@ -16,7 +16,8 @@ class User():
 
     def validate(self, email, password):
 
-        query('user/validate', vals=(email,))
+        query('user/find_by_email', vals=(email,))
+
         row = g.cur.fetchone()
 
         if row is None or row == []:
