@@ -1,5 +1,3 @@
-CREATE DATABASE phonebook;
-
 CREATE TABLE users (
 	client_name TEXT NOT NULL,
 	email TEXT UNIQUE NOT NULL,
