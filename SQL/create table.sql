@@ -1,15 +1,15 @@
 CREATE DATABASE phonebook;
 
 CREATE TABLE users (
-	client_name VARCHAR(20) NOT NULL,
-	email VARCHAR(30) UNIQUE NOT NULL,
-	passkey VARCHAR(20) NOT NULL,
+	client_name TEXT NOT NULL,
+	email TEXT UNIQUE NOT NULL,
+	passkey TEXT NOT NULL,
 	id SERIAL PRIMARY KEY
 );
 
 CREATE TABLE contacts(
-	contact_name varchar(20) NOT NULL,
-	contact_phone VARCHAR(20) NOT NULL,
+	contact_name TEXT NOT NULL,
+	contact_phone TEXT NOT NULL,
 	id SERIAL NOT NULL,
 	user_id INT NOT NULL,
 	PRIMARY KEY (id),
