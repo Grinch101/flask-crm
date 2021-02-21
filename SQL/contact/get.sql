@@ -3,4 +3,4 @@ SELECT
 FROM
     contacts
 WHERE
-    id = % s
+    id = %s

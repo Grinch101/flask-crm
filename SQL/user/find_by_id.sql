@@ -3,4 +3,4 @@ SELECT
 FROM
     users
 where
-    id = % s
+    id = %s

@@ -3,4 +3,4 @@ SELECT
 FROM
     users
 WHERE
-    email = % s
+    email = %s
