@@ -1,5 +1,4 @@
 SELECT
-    u.client_name,
     c.name,
     c.phone,
     c.id as id
