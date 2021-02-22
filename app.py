@@ -29,7 +29,7 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
-    g.cur = g.conn.cursor(cursor_factory = DictCursor)
+    # g.cur = g.conn.cursor(cursor_factory = DictCursor)
 
 
 
@@ -37,7 +37,7 @@ def open_conn():
 def close_conn(response):
     if g.conn is not None:    
         g.conn.commit()
-        g.cur.close()
+        g.conn.cursor().close()
         global connections
         connections.putconn(g.conn)
         return response
@@ -49,12 +49,12 @@ def close_conn(response):
 @app.errorhandler(DataError)
 @app.errorhandler(DatabaseError)
 def rollback_changes(error):
-    g.cur.close()
+    # g.cur.close()
     g.conn.rollback()
     global connections
     connections.putconn(g.conn)
     g.conn = None
-    g.cur = None
+    # g.conn.cursor() = None
     return render_template('error.html' , error = error)
 
 
@@ -70,8 +70,8 @@ users_handler = User()
 def index():
 
     user_id = int(request.cookies.get('user_id'))
-    entry = users_handler.find_by_id(user_id)
-    username = entry['client_name']
+    cur = users_handler.find_by_id(user_id)
+    username = cur.fetchone()['client_name']
     return render_template('index.html', username=username)
 
 
@@ -89,8 +89,8 @@ def login_check():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-
-        user_id = users_handler.find_by_email(email)['id']
+        cur = users_handler.find_by_email(email)
+        user_id = cur.fetchone()['id']
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
         return response
@@ -117,7 +117,8 @@ def signup():
     if not users_handler.old_user(email):
 
         users_handler.add( client_name, email, password)
-        user_id = users_handler.find_by_email(email)['id']
+        cur = users_handler.find_by_email(email)
+        user_id = cur.fetchone()['id']
 
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
@@ -133,9 +134,9 @@ def saved():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    user_id = request.cookies.get('user_id')
-    user_id = int(user_id)
-    entry = users_handler.find_by_id(user_id)
+    user_id = int(request.cookies.get('user_id'))
+    cur = users_handler.find_by_id(user_id)
+    entry = cur.fetchone()
     client_name = entry['client_name']
     phonebook.add(user_id, input_name, input_number)
 
@@ -148,11 +149,10 @@ def saved():
 @login_required
 def table():
 
-    user_id = request.cookies.get('user_id')
-    user_id = int(user_id)
-    contact_list = phonebook.find_by_user(user_id)
+    user_id = int(request.cookies.get('user_id'))
+    cur = phonebook.find_by_user(user_id)
 
-    return render_template('list.html', mylist=contact_list)
+    return render_template('list.html', mylist=cur)
 
 
 @app.route('/delete/contacts/<id>', methods=["POST"])
@@ -179,11 +179,11 @@ def behind():
 
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
-        user_id = request.cookies.get('user_id')
-        user_id = int(user_id)
+        
+        user_id = int(request.cookies.get('user_id'))
         list2 = phonebook.find_by_user(user_id)
-        list3 = users_handler.get_all()
 
+        list3 = users_handler.get_all()
 
         return render_template('behind-the-scene.html',
                                list1=list1,
