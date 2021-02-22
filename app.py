@@ -10,10 +10,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
 
+# Create a Global Connetion Pool:
+connections = conn_pool(1, 10)
 
 
-### Create a Global Connetion Pool:
-connections = conn_pool(1,10)
+############## initiate models ############
+phonebook = Contact()
+users_handler = User()
+
 
 #  injecting some functions to Jinja
 @app.context_processor
@@ -29,13 +33,18 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
-    # g.cur = g.conn.cursor(cursor_factory = DictCursor)
 
+
+@app.before_request
+def get_username():
+    if request.cookies.get('user_id') is not None:
+        g.user_id = int(request.cookies.get('user_id'))
+        g.username = users_handler.find_by_id(g.user_id)['client_name']
 
 
 @app.after_request
 def close_conn(response):
-    if g.conn is not None:    
+    if g.conn is not None:
         g.conn.commit()
         g.conn.cursor().close()
         global connections
@@ -49,19 +58,14 @@ def close_conn(response):
 @app.errorhandler(DataError)
 @app.errorhandler(DatabaseError)
 def rollback_changes(error):
-    # g.cur.close()
+    g.conn.cursor().close()
     g.conn.rollback()
     global connections
     connections.putconn(g.conn)
     g.conn = None
-    # g.conn.cursor() = None
-    return render_template('error.html' , error = error)
 
+    return render_template('error.html', error=error)
 
-
-############## initiate models ############
-phonebook = Contact()
-users_handler = User()
 
 ############## View Function ##############
 
@@ -69,10 +73,7 @@ users_handler = User()
 @login_required
 def index():
 
-    user_id = int(request.cookies.get('user_id'))
-    cur = users_handler.find_by_id(user_id)
-    username = cur.fetchone()['client_name']
-    return render_template('index.html', username=username)
+    return render_template('index.html', username=g.username)
 
 
 @app.route('/login', methods=["GET"])
@@ -89,8 +90,7 @@ def login_check():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-        cur = users_handler.find_by_email(email)
-        user_id = cur.fetchone()['id']
+        user_id = users_handler.find_by_email(email)['id']
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
         return response
@@ -103,7 +103,7 @@ def login_check():
 
 @app.route('/signup', methods=["GET"])
 def signup_form():
-    
+
     return render_template('signup.html')
 
 
@@ -116,9 +116,8 @@ def signup():
 
     if not users_handler.old_user(email):
 
-        users_handler.add( client_name, email, password)
-        cur = users_handler.find_by_email(email)
-        user_id = cur.fetchone()['id']
+        users_handler.add(client_name, email, password)
+        user_id = users_handler.find_by_email(email)['id']
 
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
@@ -134,25 +133,20 @@ def saved():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    user_id = int(request.cookies.get('user_id'))
-    cur = users_handler.find_by_id(user_id)
-    entry = cur.fetchone()
-    client_name = entry['client_name']
-    phonebook.add(user_id, input_name, input_number)
+    phonebook.add(g.user_id, input_name, input_number)
 
     flash(f'{input_number} for {input_name} has been saved')
 
-    return redirect(url_for('index'))
+    return redirect(url_for('index', username=g.username))
 
 
 @app.route('/table', methods=["GET"])
 @login_required
 def table():
 
-    user_id = int(request.cookies.get('user_id'))
-    cur = phonebook.find_by_user(user_id)
+    cur = phonebook.find_by_user(g.user_id)
 
-    return render_template('list.html', mylist=cur)
+    return render_template('list.html', mylist=cur, username=g.username)
 
 
 @app.route('/delete/contacts/<id>', methods=["POST"])
@@ -179,9 +173,8 @@ def behind():
 
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
-        
-        user_id = int(request.cookies.get('user_id'))
-        list2 = phonebook.find_by_user(user_id)
+
+        list2 = phonebook.find_by_user(g.user_id)
 
         list3 = users_handler.get_all()
 
@@ -190,7 +183,7 @@ def behind():
                                list2=list2,
                                list3=list3)
     else:
-        return render_template('behind-the-scene.html')
+        return render_template('behind-the-scene.html', username=g.username)
 
 
 if __name__ == "__main__":
