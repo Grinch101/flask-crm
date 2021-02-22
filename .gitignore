@@ -6,3 +6,5 @@ __pycache__
 A
 templates/debug.log
 
+templates/T2.html
+T1.py

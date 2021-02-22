@@ -1,7 +1,7 @@
 UPDATE
     contacts
 SET
-    contact_name = %s,
-    contact_phone = %s
+    "name" = %s,
+    phone = %s
 WHERE
     id = %s

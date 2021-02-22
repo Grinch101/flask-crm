@@ -1,4 +1,4 @@
 INSERT INTO
-    contacts(user_id, contact_name, contact_phone)
+    contacts(user_id, "name", phone)
 VALUES
     (%s, %s, %s)

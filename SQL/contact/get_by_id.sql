@@ -1,7 +1,7 @@
 SELECT
     u.client_name,
-    c.contact_name,
-    c.contact_phone,
+    c.name,
+    c.phone,
     c.id as id
 FROM
     contacts AS c

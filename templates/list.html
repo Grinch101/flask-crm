@@ -20,8 +20,8 @@
       {% for i , dic in enumerate(mylist , start=1) %}
       <td> {{i}} </td>
       <td>{{dic['client_name']}}</td>
-      <td>{{dic['name']}}</td>
-      <td>{{dic['phone']}}</td>
+      <td>{{dic['contact_name']}}</td>
+      <td>{{dic['contact_phone']}}</td>
       <form method="POST" action="{{url_for('delete', id=dic['id']) }}">
         <td>
           <button name="DELETE" value={{dic['id']}} type="submit" class="btn btn-danger">
