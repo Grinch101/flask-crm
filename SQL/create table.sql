@@ -6,14 +6,12 @@ CREATE TABLE users (
 );
 
 CREATE TABLE contacts(
-	contact_name TEXT NOT NULL,
-	contact_phone TEXT NOT NULL,
+	"name" TEXT NOT NULL,
+	phone TEXT NOT NULL,
 	id SERIAL NOT NULL,
 	user_id INT NOT NULL,
 	PRIMARY KEY (id),
 
 	FOREIGN KEY (user_id) REFERENCES users (id)
 );
-
-
 
