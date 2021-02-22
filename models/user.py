@@ -10,15 +10,15 @@ class User():
 
     def add(self, client_name, email, password):
 
-        query('user/register',
+        return query('user/register',
               vals=(client_name, email, password))
 
 
     def validate(self, email, password):
 
-        query('user/find_by_email', vals=(email,))
+        cur = query('user/find_by_email', vals=(email,))
 
-        row = g.cur.fetchone()
+        row = cur.fetchone()
 
         if row is None or row == []:
             return False
@@ -28,36 +28,27 @@ class User():
 
     def old_user(self, email):
 
-        query('user/find_by_email', vals=(email,))
-        row = g.cur.fetchall()
+        cur = query('user/find_by_email', vals=(email,))
+        row = cur.fetchall()
         if row is None or row == []:
             return False
+        else:
+            return True
 
 
     def delete(self, user_id):
 
-        query('user/delete', vals=(user_id,))
+        return query('user/delete', vals=(user_id,))
 
 
     def find_by_email(self, email):
 
-        query('user/find_by_email', vals=(email,))
-        rows = g.cur.fetchone()
-        return rows
+        return query('user/find_by_email', vals=(email,))
 
 
     def get_all(self):
 
-        query('user/get_all')
-        rows = g.cur.fetchall()
-        dic_list = []
-        for row in rows:
-            dic_list.append(
-                {'client_name': row['client_name'],
-                    'email': row['email'],
-                    'password': row['passkey'],
-                    'user_id': row['id']})
-        return dic_list
+        return query('user/get_all')
 
 
     def update(self, row_id, new_entry):
@@ -66,19 +57,13 @@ class User():
         password = new_entry['password']
         client_name = new_entry['client_name']
 
-        query('user/update',
+        return query('user/update',
               vals=(email, password, client_name, row_id))
 
 
     def find_by_id(self, user_id):
         
-        query('user/find_by_id', vals=(user_id,))
-        row = g.cur.fetchone()
-        entry = {'client_name': row['client_name'],
-                 'email': row['email'],
-                 'password': row['passkey'],
-                 'user_id': row['id']}
-        return row
+        return query('user/find_by_id', vals=(user_id,))
 
 
     def clear_all(self):

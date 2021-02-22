@@ -8,52 +8,36 @@ class Contact():
     def __init__(self):
         pass
 
-    def add(self, user_id, contact_name, contact_phone):
+    def add(self, user_id, name, phone):
 
-        query('contact/insert',
-              vals=(user_id, contact_name, contact_phone))
+        return query('contact/insert',
+              vals=(user_id, name, phone))
 
 
     def find_by_user(self, user_id):
 
-        query('contact/get_by_id', vals=(user_id,))
-        rows = g.cur.fetchall()
-        dic_list = []
-        for row in rows:
-            dic_list.append(
-                {'client_name': row['client_name'],
-                    'name': row['contact_name'],
-                    'phone': row['contact_phone'],
-                    'id': row['id']})
-        return dic_list
+        return query('contact/get_by_id', vals=(user_id,))
 
 
     def get_all(self):
 
-        query('contact/get_all')
-        rows = g.cur.fetchall()
-        dic_list = []
-        for row in rows:
-            dic_list.append(
-                {'name': row['contact_name'],
-                 'phone': row['contact_phone'],
-                 'user_id': row['user_id']})
-        return dic_list
-
+        return query('contact/get_all')
+        
 
     def delete(self, row_id):
 
-        query('contact/delete', vals=(row_id,))
+        return query('contact/delete', vals=(row_id,))
 
     def update(self, row_id, new_entry):
 
         row_id = new_entry['id']
-        contact_name = new_entry['name']
-        contact_phone = new_entry['phone']
+        name = new_entry['name']
+        phone = new_entry['phone']
 
-        query('contact/update', vals=(contact_name,
-                                      contact_phone, row_id))
+        return query('contact/update', vals=(name,
+                                      phone, row_id))
 
 
     def clear_all(self):
-        query('contact/truncate')
+        
+        return query('contact/truncate')
