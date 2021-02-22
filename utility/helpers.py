@@ -25,4 +25,6 @@ def query(query, vals=''):
     with open(path, 'r') as f:
         query_text = str(f.read())
 
-    g.cur.execute(query_text, vals)
+    cur = g.conn.cursor(cursor_factory = DictCursor)
+    cur.execute(query_text, vals)
+    return cur
