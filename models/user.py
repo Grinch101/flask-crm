@@ -43,8 +43,8 @@ class User():
 
     def find_by_email(self, email):
 
-        return query('user/find_by_email', vals=(email,))
-
+        cur = query('user/find_by_email', vals=(email,))
+        return cur.fetchone()
 
     def get_all(self):
 
@@ -63,7 +63,8 @@ class User():
 
     def find_by_id(self, user_id):
         
-        return query('user/find_by_id', vals=(user_id,))
+        cur = query('user/find_by_id', vals=(user_id,))
+        return cur.fetchone()
 
 
     def clear_all(self):
