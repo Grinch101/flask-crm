@@ -33,14 +33,11 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
-
-
-@app.before_request
-def get_username():
-    if request.cookies.get('user_id') is not None:
+    if request.cookies.get('user_id'):
         g.user_id = int(request.cookies.get('user_id'))
         g.username = users_handler.find_by_id(g.user_id)['client_name']
-
+    else:
+        g.user_id = None
 
 @app.after_request
 def close_conn(response):
@@ -72,7 +69,7 @@ def rollback_changes(error):
 @app.route('/', methods=["GET"])
 @login_required
 def index():
-
+    
     return render_template('index.html', username=g.username)
 
 
@@ -169,6 +166,7 @@ def logout():
 
 
 @app.route('/behind-the-scene', methods=['GET'])
+@login_required
 def behind():
 
     if request.cookies.get('user_id'):
