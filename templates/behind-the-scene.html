@@ -2,36 +2,22 @@
 
 {% block content %}
 
-<h5>dic1 = phonebook.id_index_dict</h5>
-{{dic1}}
-<br>
-
-<h5>dic2 = phonebook.id_userid</h5>
-{{dic2}}
-<br>
-
-<h5>dic3 = users_handler.userid_password</h5>
-{{dic3}}
-<br>
-
-<h5>dic4 = users_handler.userid_username</h5>
-{{dic4}}
-<br>
-
-<h5>dic5 = users_handler.email_userid</h5>
-{{dic5}}
-<br>
-
 <h5>list1 = phonebook.GetAll()</h5>
-{{list1}}
+{% for item1 in list1 %}
+{{item1}}
+{% endfor %}
 <br>
 
 <h5>list2 = phonebook.find_book(userid)</h5>
-{{list2}}
+{% for item2 in list2 %}
+{{item2}}
+{% endfor %}
 <br>
 
 <h5>list3 = users_handler.users_list</h5>
-{{list3}}
+{% for item3 in list3 %}
+{{item3}}
+{% endfor %}
 <br>
 
 

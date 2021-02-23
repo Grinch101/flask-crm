@@ -1,27 +1,42 @@
-from models.BaseModel import BaseModel
+from utility.helpers import query
 
 
-class Contact(BaseModel):
-
+####
+class Contact():
+    
     def __init__(self):
-        self.userid_id = {}
-        super().__init__()
+        pass
 
-    def add(self, entry):
+    def add(self, user_id, name, phone):
 
-        id = super().add(entry)
+        return query('contact/insert',
+              vals=(user_id, name, phone))
 
-        # extract the userid back, add to helper dictionaries:
-        userid = entry['userid']
 
-        if self.userid_id.get(userid):
-            self.userid_id[userid].append(id)
-        else:
-            self.userid_id[userid] = [id]
+    def get_by_user(self, user_id):
 
-    def find_book(self, userid):
-        try:
-            entry_list = self.userid_id.get(userid)
-            return [self.find_val(id) for id in entry_list]
-        except:
-            return []
+        return query('contact/get_by_user', vals=(user_id,))
+
+
+    def get_all(self):
+
+        return query('contact/get_all')
+        
+
+    def delete(self, row_id):
+
+        return query('contact/delete', vals=(row_id,))
+
+    def update(self, row_id, new_entry):
+
+        row_id = new_entry['id']
+        name = new_entry['name']
+        phone = new_entry['phone']
+
+        return query('contact/update', vals=(name,
+                                      phone, row_id))
+
+
+    def clear_all(self):
+        
+        return query('contact/truncate')

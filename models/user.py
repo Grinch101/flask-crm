@@ -1,38 +1,61 @@
-from models.BaseModel import BaseModel
+from utility.helpers import query
 
 
-class User(BaseModel):
-
+####
+class User():
+    
     def __init__(self):
-        self.email_userid = {}
-        super().__init__()
+        pass
 
-    def add(self, entry):
-        userid = super().add(entry)
-        email = entry['email']
-        self.email_userid[email] = userid
+    def add(self, client_name, email, password):
 
+        return query('user/register',
+              vals=(client_name, email, password))
+
+
+    def get_by_email(self, email):
+
+        cur = query('user/get_by_email', vals=(email,))
+        return cur.fetchone()
+
+        
     def validate(self, email, password):
 
-        if self.old_user(email):
-            userid = self.email_userid[email]
-            entry = self.find_val(userid)
-            return entry['password'] == password
+        row = self.find_by_email(email)
+
+        if row is None or row == []:
+            return False
         else:
-            False
+            return password == row['passkey']
 
-    def old_user(self, email):
 
-        emails = list(self.email_userid.keys())
-        return email in emails
+    def delete(self, user_id):
 
-    def delete(self, userid):
+        return query('user/delete', vals=(user_id,))
 
-        super().delete(userid)
-        del self.id_index[userid]
-        for userid in range(userid+1, len(self.list)+1):
-            self.id_index[userid] -= 1
 
-    def find_userid_by_email(self, email):
 
-        return self.email_userid.get(email)
+    def get_all(self):
+
+        return query('user/get_all')
+
+
+    def update(self, row_id, new_entry):
+
+        email = new_entry['email']
+        password = new_entry['password']
+        client_name = new_entry['client_name']
+
+        return query('user/update',
+              vals=(email, password, client_name, row_id))
+
+
+    def get_by_id(self, user_id):
+        
+        cur = query('user/get_by_id', vals=(user_id,))
+        return cur.fetchone()
+
+
+    def clear_all(self):
+
+        query('user/truncate')

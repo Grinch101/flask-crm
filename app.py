@@ -1,23 +1,22 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, make_response
+from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g
 from models.contact import Contact
 from models.user import User
-import names
-import random
-from functools import wraps
+from utility.decor import login_required
+from utility.helpers import conn_pool
+from psycopg2 import DatabaseError, DataError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
 
-####### Define Decorator #########
-def login_required(func):
-    @wraps(func)
-    def wrap(*args, **kwargs):
-        if request.cookies.get('user_id'):
-            return func(*args, **kwargs)
-        else:
 
-            return redirect(url_for(('login_form')))
-    return wrap
+# Create a Global Connetion Pool:
+connections = conn_pool(1, 10)
+
+
+############## initiate models ############
+phonebook = Contact()
+users_handler = User()
+
 
 #  injecting some functions to Jinja
 @app.context_processor
@@ -28,25 +27,57 @@ def inject_func():
                 len=len)
 
 
-## initiate ###################
-phonebook = Contact()
-users_handler = User()
+###### before and after each request ########
+@app.before_request
+def open_conn():
+    global connections
+    g.conn = connections.getconn()
 
-## View Function ##############
+@app.before_request
+def user_ident():
+    if request.cookies.get('user_id'):
+        user_id = int(request.cookies.get('user_id'))
+        g.user = users_handler.get_by_id(user_id)
+    else:
+        g.user = None
 
+@app.after_request
+def close_conn(response):
+    if g.conn is not None:
+        g.conn.commit()
+        g.conn.cursor().close()
+        global connections
+        connections.putconn(g.conn)
+        return response
+    else:
+        return response
+
+
+########### Error handler ###########
+@app.errorhandler(DataError)
+@app.errorhandler(DatabaseError)
+def rollback_changes(error):
+    g.conn.cursor().close()
+    g.conn.rollback()
+    global connections
+    connections.putconn(g.conn)
+    g.conn = None
+
+    return render_template('error.html', error=error)
+
+
+############## View Function ##############
 
 @app.route('/', methods=["GET"])
 @login_required
 def index():
-    userid = int(request.cookies.get('user_id'))
-    entry = users_handler.find_val(userid)
-    username = entry['client_name']
-    return render_template('index.html', username=username)
+    
+    return render_template('index.html', username=g.user['client_name'])
 
 
 @app.route('/login', methods=["GET"])
 def login_form():
-    flash("Please Login first!")
+
     return render_template('login.html')
 
 
@@ -57,10 +88,9 @@ def login_check():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-
-        userid = users_handler.find_userid_by_email(email)
+        user_id = users_handler.get_by_email(email)['id']
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('user_id', str(userid))
+        response.set_cookie('user_id', str(user_id))
         return response
 
     else:
@@ -81,18 +111,14 @@ def signup():
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
-    entry = {   'client_name':client_name,
-                'email':email,
-                'password':password}
 
+    if users_handler.get_by_email(email)['email'] != email:
 
-    if not users_handler.old_user(email):
-
-        users_handler.add(entry)
-        userid = users_handler.email_userid[email]
+        users_handler.add(client_name, email, password)
+        user_id = users_handler.get_by_email(email)['id']
 
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('user_id', str(userid))
+        response.set_cookie('user_id', str(user_id))
         return response
     else:
         flash('Email in use, please login')
@@ -105,18 +131,7 @@ def saved():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    userid = request.cookies.get('user_id')
-    userid = int(userid)
-    entry = users_handler.find_val(userid)
-    client_name = entry['client_name']
-
-    value = {   'userid'        :userid,
-                'client_name'   :client_name,
-                'name'          :input_name ,
-                'phone'         :input_number}
-
-
-    phonebook.add(value)
+    phonebook.add(g.user['id'], input_name, input_number)
 
     flash(f'{input_number} for {input_name} has been saved')
 
@@ -127,22 +142,19 @@ def saved():
 @login_required
 def table():
 
-    userid = request.cookies.get('user_id')
-    userid = int(userid)
-    contact_list = phonebook.find_book(userid)
+    cur = phonebook.get_by_user(g.user['id'])
 
-    return render_template('list.html', mylist=contact_list)
+    return render_template('list.html', mylist=cur, username=g.user['client_name'])
 
 
-@app.route('/delete', methods=["POST"])
+@app.route('/delete/contacts/<id>', methods=["POST"])
 @login_required
-def delete():
+def delete(id):
 
-    id = int(request.form.get("DELETE"))
     phonebook.delete(id)
     flash(f"ID:{id} Deleted")
 
-    return redirect(url_for('table'))
+    return make_response(redirect(url_for('table')))
 
 
 @app.route('/logout', methods=['POST'])
@@ -155,39 +167,22 @@ def logout():
 
 
 @app.route('/behind-the-scene', methods=['GET'])
+@login_required
 def behind():
 
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
-        userid = request.cookies.get('user_id')
-        userid = int(userid)
-        list2 = phonebook.find_book(userid)
-        list3 = users_handler.list
-        dic1 = phonebook.id_index
-        dic2 = users_handler.email_userid
 
-        return render_template('behind-the-scene.html', dic1=dic1,
-                               dic2=dic2,
+        list2 = phonebook.get_by_user(g.user['id'])
+
+        list3 = users_handler.get_all()
+
+        return render_template('behind-the-scene.html',
                                list1=list1,
                                list2=list2,
                                list3=list3)
-
     else:
-        return render_template('behind-the-scene.html')
-
-
-# i = 0
-# while i <= 150:
-
-#     user_length = random.randint(1,5)
-#     for j in range(user_length):
-#         client_name = names.get_first_name()
-#         book_length = random.randint(1,10)
-#         for k in range(book_length):
-#             name = names.get_full_name()
-#             phone = int(random.random()*10000000000)
-#             phonebook.insert(client_name,name,phone)
-#             i += 1
+        return render_template('behind-the-scene.html', username=g.user['client_name'])
 
 
 if __name__ == "__main__":
