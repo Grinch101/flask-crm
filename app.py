@@ -33,11 +33,14 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
+
+@app.before_request
+def user_ident():
     if request.cookies.get('user_id'):
-        g.user_id = int(request.cookies.get('user_id'))
-        g.username = users_handler.find_by_id(g.user_id)['client_name']
+        user_id = int(request.cookies.get('user_id'))
+        g.user = users_handler.find_by_id(user_id)
     else:
-        g.user_id = None
+        g.user = None
 
 @app.after_request
 def close_conn(response):
@@ -70,7 +73,7 @@ def rollback_changes(error):
 @login_required
 def index():
     
-    return render_template('index.html', username=g.username)
+    return render_template('index.html', username=g.user['client_name'])
 
 
 @app.route('/login', methods=["GET"])
@@ -130,20 +133,20 @@ def saved():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    phonebook.add(g.user_id, input_name, input_number)
+    phonebook.add(g.user['id'], input_name, input_number)
 
     flash(f'{input_number} for {input_name} has been saved')
 
-    return redirect(url_for('index', username=g.username))
+    return redirect(url_for('index'))
 
 
 @app.route('/table', methods=["GET"])
 @login_required
 def table():
 
-    cur = phonebook.find_by_user(g.user_id)
+    cur = phonebook.find_by_user(g.user['id'])
 
-    return render_template('list.html', mylist=cur, username=g.username)
+    return render_template('list.html', mylist=cur, username=g.user['client_name'])
 
 
 @app.route('/delete/contacts/<id>', methods=["POST"])
@@ -172,7 +175,7 @@ def behind():
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
 
-        list2 = phonebook.find_by_user(g.user_id)
+        list2 = phonebook.find_by_user(g.user['id'])
 
         list3 = users_handler.get_all()
 
@@ -181,7 +184,7 @@ def behind():
                                list2=list2,
                                list3=list3)
     else:
-        return render_template('behind-the-scene.html', username=g.username)
+        return render_template('behind-the-scene.html', username=g.user['client_name'])
 
 
 if __name__ == "__main__":

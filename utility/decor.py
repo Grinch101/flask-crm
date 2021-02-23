@@ -9,7 +9,7 @@ users_handler = User()
 def login_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
-        if g.user_id is not None:
+        if g.user is not None:
             
             return func(*args, **kwargs)
         else:
