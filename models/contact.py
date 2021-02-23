@@ -1,5 +1,4 @@
 from utility.helpers import query
-from flask import g
 
 
 ####

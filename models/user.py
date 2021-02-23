@@ -1,5 +1,4 @@
 from utility.helpers import query
-from flask import g
 
 
 ####
@@ -14,11 +13,15 @@ class User():
               vals=(client_name, email, password))
 
 
-    def validate(self, email, password):
+    def find_by_email(self, email):
 
         cur = query('user/find_by_email', vals=(email,))
+        return cur.fetchone()
 
-        row = cur.fetchone()
+
+    def validate(self, email, password):
+
+        row = self.find_by_email(email)
 
         if row is None or row == []:
             return False
@@ -28,8 +31,7 @@ class User():
 
     def old_user(self, email):
 
-        cur = query('user/find_by_email', vals=(email,))
-        row = cur.fetchall()
+        row = self.find_by_email(email)
         if row is None or row == []:
             return False
         else:
@@ -40,11 +42,6 @@ class User():
 
         return query('user/delete', vals=(user_id,))
 
-
-    def find_by_email(self, email):
-
-        cur = query('user/find_by_email', vals=(email,))
-        return cur.fetchone()
 
     def get_all(self):
 
