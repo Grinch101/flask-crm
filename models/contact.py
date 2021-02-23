@@ -13,9 +13,9 @@ class Contact():
               vals=(user_id, name, phone))
 
 
-    def find_by_user(self, user_id):
+    def get_by_user(self, user_id):
 
-        return query('contact/get_by_id', vals=(user_id,))
+        return query('contact/get_by_user', vals=(user_id,))
 
 
     def get_all(self):

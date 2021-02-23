@@ -13,12 +13,12 @@ class User():
               vals=(client_name, email, password))
 
 
-    def find_by_email(self, email):
+    def get_by_email(self, email):
 
-        cur = query('user/find_by_email', vals=(email,))
+        cur = query('user/get_by_email', vals=(email,))
         return cur.fetchone()
 
-
+        
     def validate(self, email, password):
 
         row = self.find_by_email(email)
@@ -29,18 +29,10 @@ class User():
             return password == row['passkey']
 
 
-    def old_user(self, email):
-
-        row = self.find_by_email(email)
-        if row is None or row == []:
-            return False
-        else:
-            return True
-
-
     def delete(self, user_id):
 
         return query('user/delete', vals=(user_id,))
+
 
 
     def get_all(self):
@@ -58,9 +50,9 @@ class User():
               vals=(email, password, client_name, row_id))
 
 
-    def find_by_id(self, user_id):
+    def get_by_id(self, user_id):
         
-        cur = query('user/find_by_id', vals=(user_id,))
+        cur = query('user/get_by_id', vals=(user_id,))
         return cur.fetchone()
 
 

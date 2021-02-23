@@ -1,9 +1,8 @@
-from flask import request, redirect, url_for, g
-from utility.helpers import query
+from flask import request, redirect, url_for, g, flash
 from functools import wraps
-from models.user import User
+
 ####### Define Decorator #########
-users_handler = User()
+
 
 
 def login_required(func):
@@ -13,5 +12,6 @@ def login_required(func):
             
             return func(*args, **kwargs)
         else:
+            flash("Please Login first!")
             return redirect(url_for(('login_form')))
     return wrap

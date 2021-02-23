@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, mak
 from models.contact import Contact
 from models.user import User
 from utility.decor import login_required
-from utility.helpers import conn_pool, query
-from psycopg2.extras import DictCursor
+from utility.helpers import conn_pool
 from psycopg2 import DatabaseError, DataError
 
 app = Flask(__name__)
@@ -38,7 +37,7 @@ def open_conn():
 def user_ident():
     if request.cookies.get('user_id'):
         user_id = int(request.cookies.get('user_id'))
-        g.user = users_handler.find_by_id(user_id)
+        g.user = users_handler.get_by_id(user_id)
     else:
         g.user = None
 
@@ -79,7 +78,6 @@ def index():
 @app.route('/login', methods=["GET"])
 def login_form():
 
-    flash("Please Login first!")
     return render_template('login.html')
 
 
@@ -90,7 +88,7 @@ def login_check():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-        user_id = users_handler.find_by_email(email)['id']
+        user_id = users_handler.get_by_email(email)['id']
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
         return response
@@ -114,10 +112,10 @@ def signup():
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
 
-    if not users_handler.old_user(email):
+    if users_handler.get_by_email(email)['email'] != email:
 
         users_handler.add(client_name, email, password)
-        user_id = users_handler.find_by_email(email)['id']
+        user_id = users_handler.get_by_email(email)['id']
 
         response = make_response(redirect(url_for('index')))
         response.set_cookie('user_id', str(user_id))
@@ -144,7 +142,7 @@ def saved():
 @login_required
 def table():
 
-    cur = phonebook.find_by_user(g.user['id'])
+    cur = phonebook.get_by_user(g.user['id'])
 
     return render_template('list.html', mylist=cur, username=g.user['client_name'])
 
@@ -175,7 +173,7 @@ def behind():
     if request.cookies.get('user_id'):
         list1 = phonebook.get_all()
 
-        list2 = phonebook.find_by_user(g.user['id'])
+        list2 = phonebook.get_by_user(g.user['id'])
 
         list3 = users_handler.get_all()
 

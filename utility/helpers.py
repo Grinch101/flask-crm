@@ -17,7 +17,7 @@ def conn_pool(minconn, maxconn, /, host='localhost', database='phonebook', user=
 
 
 ############ query func  ##########
-def query(query, vals=''):
+def query(query, vals=()):
 
     query = "sql/" + query + ".sql"
     path = Path(query)
