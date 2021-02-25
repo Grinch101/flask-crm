@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, make_response, g
 from models.contact import Contact
 from models.user import User
+from models.activity import Activity
 from utility.decor import login_required
-from utility.helpers import conn_pool
-from psycopg2 import DatabaseError, DataError
+from utility.helpers import conn_pool, conv_datetime, plotter
+from psycopg2 import DatabaseError, DataError, OperationalError, InternalError, ProgrammingError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
@@ -16,15 +17,18 @@ connections = conn_pool(1, 10)
 ############## initiate models ############
 phonebook = Contact()
 users_handler = User()
-
+activities = Activity()
 
 #  injecting some functions to Jinja
+
+
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
                 list=list,
                 range=range,
-                len=len)
+                len=len,
+                int=int)
 
 
 ###### before and after each request ########
@@ -32,6 +36,7 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
+    print('connection opened')
 
 @app.before_request
 def user_ident():
@@ -41,11 +46,13 @@ def user_ident():
     else:
         g.user = None
 
+
 @app.after_request
 def close_conn(response):
     if g.conn is not None:
         g.conn.commit()
         g.conn.cursor().close()
+        print('connection closed')
         global connections
         connections.putconn(g.conn)
         return response
@@ -54,9 +61,13 @@ def close_conn(response):
 
 
 ########### Error handler ###########
+@app.errorhandler(InternalError)
+@app.errorhandler(OperationalError)
+@app.errorhandler(ProgrammingError)
 @app.errorhandler(DataError)
 @app.errorhandler(DatabaseError)
 def rollback_changes(error):
+    print('connection closed by ERROR')
     g.conn.cursor().close()
     g.conn.rollback()
     global connections
@@ -71,7 +82,7 @@ def rollback_changes(error):
 @app.route('/', methods=["GET"])
 @login_required
 def index():
-    
+
     return render_template('index.html', username=g.user['client_name'])
 
 
@@ -111,8 +122,8 @@ def signup():
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
-
-    if users_handler.get_by_email(email)['email'] != email:
+    q_email = users_handler.get_by_email(email)
+    if q_email is None or q_email['email'] != email:
 
         users_handler.add(client_name, email, password)
         user_id = users_handler.get_by_email(email)['id']
@@ -184,6 +195,38 @@ def behind():
     else:
         return render_template('behind-the-scene.html', username=g.user['client_name'])
 
+
+@app.route('/activity-log/<int:contact_id>', methods=['POST'])
+@login_required
+def get_history(contact_id):
+    
+    contact_name = phonebook.get_by_id(contact_id)['name']
+    print('phonebook query')
+    rows = activities.get_history(g.user['id'], contact_id).fetchall()
+    print('get history started')
+    print(rows)
+    return render_template('activity2.html',
+                           history_list=rows,
+                           contact_name=contact_name,
+                           contact_id=contact_id,
+                        #    json_fig = plotter(rows)
+                           )
+
+
+@app.route('/activity-log/<int:contact_id>', methods=['POST'])
+@login_required
+def add_log(contact_id):
+    print('add log started')
+    action = request.form['action']
+    description = request.form['note']
+    date = request.form['date']
+    time = request.form['time']
+    date_time = conv_datetime(date, time)
+
+    activities.new_action(action, description, date_time,
+                          g.user['id'], contact_id)
+    print('add log ended')
+    return redirect(url_for('get_history', contact_id=contact_id))
 
 if __name__ == "__main__":
     app.run(debug=True)
