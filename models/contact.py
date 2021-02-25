@@ -18,6 +18,11 @@ class Contact():
         return query('contact/get_by_user', vals=(user_id,))
 
 
+    def get_by_id(self, row_id):
+        cur = query('contact/get_by_id', vals=(row_id,))
+        return cur.fetchone()
+
+
     def get_all(self):
 
         return query('contact/get_all')

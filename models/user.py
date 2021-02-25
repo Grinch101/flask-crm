@@ -21,7 +21,7 @@ class User():
         
     def validate(self, email, password):
 
-        row = self.find_by_email(email)
+        row = self.get_by_email(email)
 
         if row is None or row == []:
             return False
