@@ -22,17 +22,17 @@
       <td>{{dic['phone']}}</td>
       <form method="POST" action="{{url_for('delete', id=dic['id']) }}">
         <td>
-          <button name="DELETE" value={{dic['id']}} type="submit" class="btn btn-danger">
+          <button name="DELETE" value="{{dic['id']}}" type="submit" class="btn btn-danger">
             Delete
           </button>
         </td>
       </form>
-      <form action="" method="">
-      <td>
-        <button name="Log" value={{dic['id']}} type="submit" class="btn btn-info">
-          Log
-        </button>
-        </form>
+      <form method="POST" action="{{ url_for('get_history', contact_id = dic['id'] ) }} ">
+        <td>
+          <button name="activity" value="{{dic['id']}}" type="submit" class="btn btn-info">
+            Log
+          </button>
+      </form>
       </td>
     </tr>
     {% endfor %}
