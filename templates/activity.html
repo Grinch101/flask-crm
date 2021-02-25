@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+
+<form method="POST" action="{{url_for('add_log' , ID=ID )}}" >
+  <label for="FormControlSelect">Select action type</label>
+  <select class="form-control w-50" name="action" id="FormControlSelect">
+    <option>Email</option>
+    <option>Call</option>
+    <option>Meet</option>
+    <option>--</option>
+    <option>--</option>
+  </select>
+<div class='jumbotron'>
+  <input type="date" name="date" id="">
+
+  <input type="time" name="time" id="">
+
+
+  <textarea class="form-group w-50" name="note" id="FormControlTextarea1" placeholder="Enter Your Note"
+    rows="3"></textarea>
+
+
+  <button type="submit" name="Save" class="btn btn-primary" >Save</button>
+</div>
+</form>
+</div>
+
+<div name="table" class="jumbotron col-sm-6">
+  <h1> Activity Log for {{contact_name}} </h1>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Action</th>
+        <th scope="col">Note</th>
+        <th scope="col">Date and Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {% for i , dic in enumerate(history_list , start=1) %}
+        <td> {{i}} </td>
+        <td>{{dic['action']}}</td>
+        <td>{{dic['description']}}</td>
+        <td>{{dic['datetime']}}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+</div>
+
+
+<div id="chart" class="chart">
+
+</div>
+
+{% endblock content %}
+
+
+{% block fig %}
+
+
+
+
+{% endblock fig %}
