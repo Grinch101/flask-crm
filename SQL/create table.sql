@@ -11,7 +11,16 @@ CREATE TABLE contacts(
 	id SERIAL NOT NULL,
 	user_id INT NOT NULL,
 	PRIMARY KEY (id),
-
 	FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
+CREATE TABLE activities(
+	"action" TEXT NOT NULL,
+	"description" TEXT,
+	"datetime" TIMESTAMP NOT NULL,
+	user_id INT NOT NULL,
+	contact_id INT NOT NULL,
+	"id" SERIAL PRIMARY KEY,
+	FOREIGN KEY (user_id) REFERENCES users ("id"),
+	FOREIGN KEY (contact_id) REFERENCES contacts ("id")
+)
