@@ -57,11 +57,13 @@ def plotter(rows):
         lenght = range(1, len(actions)+1)
 
         fig = go.Figure()
-        # date_time = [dt.datetime.strptime(item, "%Y-%m-%d %h:%m") for item in dates]
-
+        
         for i, j, k, l in zip(dates, actions, notes, lenght):
 
-            fig.add_trace(go.Scatter(mode='text', x=[i], y=[l+0.25], text=[k],  showlegend=True))
+            # fig.add_trace(go.Scatter(mode='text', x=[i], y=[l+0.25], text=[j],  showlegend=True))
+            # ignore the notes for now
+
+            fig.add_trace(go.Scatter(mode='text', x=[i], y=[l+0.25], text=[j],  showlegend=True))
             fig.add_trace(go.Scatter(mode='lines', x=[i], y=[0], line_color='black'))
             fig.add_trace(go.Scatter(mode='markers', x=[i], y=[0], marker=dict(color='black',
                                     line=dict(color='black')), name=j))
@@ -69,7 +71,7 @@ def plotter(rows):
             fig.add_shape(x1=i, x0=i, y1=l, y0=0, line=dict(color='black'))
 
         fig.update_layout(template="plotly_white", showlegend=False,
-                        yaxis=dict(showgrid=False, range=[0, 4], visible=False),
+                        yaxis=dict(showgrid=False, range=[0, len(actions)+2], visible=False),
                         xaxis=dict(showgrid=False, visible=True, showline=True, zeroline=True, zerolinewidth=2))
 
         # JSONify:
