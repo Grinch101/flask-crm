@@ -4,7 +4,7 @@ from models.user import User
 from models.activity import Activity
 from utility.decor import login_required
 from utility.helpers import conn_pool, conv_datetime, plotter
-from psycopg2 import DatabaseError, DataError, OperationalError, InternalError, ProgrammingError
+from psycopg2 import DatabaseError, DataError, OperationalError, InternalError, ProgrammingError, errors
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
@@ -36,7 +36,6 @@ def inject_func():
 def open_conn():
     global connections
     g.conn = connections.getconn()
-    print('connection opened')
 
 @app.before_request
 def user_ident():
@@ -52,7 +51,6 @@ def close_conn(response):
     if g.conn is not None:
         g.conn.commit()
         g.conn.cursor().close()
-        print('connection closed')
         global connections
         connections.putconn(g.conn)
         return response
@@ -61,13 +59,11 @@ def close_conn(response):
 
 
 ########### Error handler ###########
-@app.errorhandler(InternalError)
-@app.errorhandler(OperationalError)
-@app.errorhandler(ProgrammingError)
+
 @app.errorhandler(DataError)
 @app.errorhandler(DatabaseError)
 def rollback_changes(error):
-    print('connection closed by ERROR')
+
     g.conn.cursor().close()
     g.conn.rollback()
     global connections
@@ -75,6 +71,7 @@ def rollback_changes(error):
     g.conn = None
 
     return render_template('error.html', error=error)
+
 
 
 ############## View Function ##############
@@ -160,12 +157,17 @@ def table():
 
 @app.route('/delete/contacts/<id>', methods=["POST"])
 @login_required
-def delete(id):
+def delete_contact(id):
+    try:
+        phonebook.delete(id)
+        flash(f"ID:{id} Deleted")
+        return redirect(url_for('table'))
 
-    phonebook.delete(id)
-    flash(f"ID:{id} Deleted")
+    except errors.ForeignKeyViolation:
+        flash('You should delete associated activities first!')
+        return redirect(url_for('table'))
 
-    return make_response(redirect(url_for('table')))
+    
 
 
 @app.route('/logout', methods=['POST'])
@@ -196,37 +198,36 @@ def behind():
         return render_template('behind-the-scene.html', username=g.user['client_name'])
 
 
-@app.route('/activity-log/<int:contact_id>', methods=['POST'])
+@app.route('/activity-log/<int:contact_id>', methods=["GET"] )
 @login_required
 def get_history(contact_id):
     
     contact_name = phonebook.get_by_id(contact_id)['name']
-    print('phonebook query')
     rows = activities.get_history(g.user['id'], contact_id).fetchall()
-    print('get history started')
-    print(rows)
-    return render_template('activity2.html',
+    return render_template('activity.html',
                            history_list=rows,
                            contact_name=contact_name,
                            contact_id=contact_id,
-                        #    json_fig = plotter(rows)
-                           )
+                           json_fig = plotter(rows) )
 
 
-@app.route('/activity-log/<int:contact_id>', methods=['POST'])
+@app.route('/activity-log/<int:contact_id>', methods=["POST"] )
 @login_required
 def add_log(contact_id):
-    print('add log started')
+    
     action = request.form['action']
-    description = request.form['note']
+    description = request.form['text']
     date = request.form['date']
     time = request.form['time']
     date_time = conv_datetime(date, time)
 
     activities.new_action(action, description, date_time,
                           g.user['id'], contact_id)
-    print('add log ended')
+
     return redirect(url_for('get_history', contact_id=contact_id))
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
