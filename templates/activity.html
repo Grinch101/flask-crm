@@ -20,43 +20,26 @@
 </div>
 
 
-<div name="table" class="table">
+{% for row in rows %}
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Action</th>
-        <th scope="col">Note</th>
-        <th scope="col">Date and Time</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        {% for i , dic in enumerate(history_list , start=1) %}
-        <td> {{i}} </td>
-        <td>{{dic['action']}}</td>
-        <td>{{dic['description']}}</td>
-        <td>{{dic['datetime']}}</td>
-      </tr>
-      {% endfor %}
-
-    </tbody>
-  </table>
-
-
-
-  <div id="myPlot"></div>
-
+<div class="d-flex justify-content-center">
+<div class="card w-50" >
+  <div class="card-header">
+    on {{row['datetime']}}
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+<p>{{username}} contacted {{contact_name}} through {{row['action']}}</p>
+      <footer class="blockquote-footer"> {{row['description']}}</footer>
+    </blockquote>
+  </div>
 </div>
+</div>
+<br>
+{% endfor %}
+
+
+
 
 {% endblock content %}
 
-
-{% block fig %}
-
-<script>
-  Plotly.newPlot("myPlot", {{ json_fig | safe}})
-</script>
-
-{% endblock fig %}
