@@ -3,7 +3,7 @@ from models.contact import Contact
 from models.user import User
 from models.activity import Activity
 from utility.decor import login_required
-from utility.helpers import conn_pool, conv_datetime, plotter
+from utility.helpers import conn_pool, conv_datetime
 from psycopg2 import DatabaseError, DataError, OperationalError, InternalError, ProgrammingError, errors
 
 app = Flask(__name__)
@@ -205,10 +205,10 @@ def get_history(contact_id):
     contact_name = phonebook.get_by_id(contact_id)['name']
     rows = activities.get_history(g.user['id'], contact_id).fetchall()
     return render_template('activity.html',
-                           history_list=rows,
+                           rows=rows,
                            contact_name=contact_name,
                            contact_id=contact_id,
-                           json_fig = plotter(rows) )
+                           username=g.user['client_name'] )
 
 
 @app.route('/activity-log/<int:contact_id>', methods=["POST"] )
@@ -216,7 +216,7 @@ def get_history(contact_id):
 def add_log(contact_id):
     
     action = request.form['action']
-    description = request.form['text']
+    description = request.form['description']
     date = request.form['date']
     time = request.form['time']
     date_time = conv_datetime(date, time)
