@@ -2,34 +2,25 @@
 
 {% block content %}
 
-<div class="jumbotron">
-
-<form method="POST" action="{{url_for('add_log' , ID=ID )}}" >
-  <label for="FormControlSelect">Select action type</label>
-  <select class="form-control w-50" name="action" id="FormControlSelect">
-    <option>Email</option>
-    <option>Call</option>
-    <option>Meet</option>
-    <option>--</option>
-    <option>--</option>
-  </select>
-<div class='jumbotron'>
-  <input type="date" name="date" id="">
-
-  <input type="time" name="time" id="">
-
-
-  <textarea class="form-group w-50" name="note" id="FormControlTextarea1" placeholder="Enter Your Note"
-    rows="3"></textarea>
-
-
-  <button type="submit" name="Save" class="btn btn-primary" >Save</button>
-</div>
-</form>
+<div name='whole form' class='jumbotron'>
+  <h3>Activity log for contact: {{contact_name}}</h3>
+  <br>
+  <form method="POST" name="save-log-form" action="{{url_for('add_log' , contact_id = contact_id)}}">
+    <input type="date" name="date" id="">
+    <input type="time" name="time" id="">
+    <input type="text" name="description">
+    <select name="action" id="">
+      <option value="email">Email</option>
+      <option value="call">Call</option>
+      <option value="--">--</option>
+      <option value="--">--</option>
+    </select>
+    <button class="btn-primary" type="submit" name="save-log-button" value="{{contact_id}}">SAVE</button>
+  </form>
 </div>
 
-<div name="table" class="jumbotron col-sm-6">
-  <h1> Activity Log for {{contact_name}} </h1>
+
+<div name="table" class="table">
 
   <table class="table">
     <thead>
@@ -53,10 +44,9 @@
     </tbody>
   </table>
 
-</div>
 
 
-<div id="chart" class="chart">
+  <div id="myPlot"></div>
 
 </div>
 
@@ -65,7 +55,8 @@
 
 {% block fig %}
 
-
-
+<script>
+  Plotly.newPlot("myPlot", {{ json_fig | safe}})
+</script>
 
 {% endblock fig %}
