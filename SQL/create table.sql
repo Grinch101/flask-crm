@@ -17,7 +17,7 @@ CREATE TABLE contacts(
 CREATE TABLE activities(
 	"action" TEXT NOT NULL,
 	"description" TEXT,
-	"datetime" TIMESTAMP NOT NULL,
+	"datetime" TEXT NOT NULL,
 	user_id INT NOT NULL,
 	contact_id INT NOT NULL,
 	"id" SERIAL PRIMARY KEY,
