@@ -3,7 +3,7 @@ from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import DictCursor
 from pathlib import Path
 from flask import g
-import datetime as dt
+import arrow
 import plotly
 import plotly.graph_objects as go
 import json
@@ -38,11 +38,6 @@ def query(query, vals=""):
 def conv_datetime(date, time):
     date = str(date)
     time = str(time)
-    # # reference for date formatting
-    # %d	Day of the month (decimal number)
-    # %m	Month (decimal number)
-    # %b	Month (abbreviated)
-    # %B	Month (full name)
-    # %y	Year (2 digit)
-    # %Y	Year (4 digit)
-    return dt.datetime.strptime(f'{date} {time}', '%Y-%m-%d %H:%M')
+
+    arrow_time= arrow.get(f'{date} {time}', 'YYYY-MM-DD HH:mm')
+    return arrow_time.format('h:m A - dddd MMM Do, YYYY')
