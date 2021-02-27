@@ -23,17 +23,23 @@
 {% for row in rows %}
 
 <div class="d-flex justify-content-center">
-<div class="card w-50" >
-  <div class="card-header">
-    on {{row['datetime']}}
+  <div class="card w-50">
+    <div class="card-header">
+      on {{row['datetime']}}
+    </div>
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <p>{{username}} contacted {{contact_name}} through {{row['action']}}</p>
+
+        <footer class="blockquote-footer"> {{row['description']}}</footer>
+        <form action="{{url_for('delete_activity', activity_id = row['id'], contact_id = contact_id )}}" 
+        method="POST">
+          <button type="submit" class="btn btn-danger" value="{{row['id']}}">Delete</button>
+
+        </form>
+      </blockquote>
+    </div>
   </div>
-  <div class="card-body">
-    <blockquote class="blockquote mb-0">
-<p>{{username}} contacted {{contact_name}} through {{row['action']}}</p>
-      <footer class="blockquote-footer"> {{row['description']}}</footer>
-    </blockquote>
-  </div>
-</div>
 </div>
 <br>
 {% endfor %}
@@ -42,4 +48,3 @@
 
 
 {% endblock content %}
-

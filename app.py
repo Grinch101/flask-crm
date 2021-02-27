@@ -37,6 +37,7 @@ def open_conn():
     global connections
     g.conn = connections.getconn()
 
+
 @app.before_request
 def user_ident():
     if request.cookies.get('user_id'):
@@ -71,7 +72,6 @@ def rollback_changes(error):
     g.conn = None
 
     return render_template('error.html', error=error)
-
 
 
 ############## View Function ##############
@@ -167,8 +167,6 @@ def delete_contact(id):
         flash('You should delete associated activities first!')
         return redirect(url_for('table'))
 
-    
-
 
 @app.route('/logout', methods=['POST'])
 @login_required
@@ -198,23 +196,24 @@ def behind():
         return render_template('behind-the-scene.html', username=g.user['client_name'])
 
 
-@app.route('/activity-log/<int:contact_id>', methods=["GET"] )
+@app.route('/activity-log/<int:contact_id>', methods=["GET"])
 @login_required
 def get_history(contact_id):
-    
+
     contact_name = phonebook.get_by_id(contact_id)['name']
     rows = activities.get_history(g.user['id'], contact_id).fetchall()
+
     return render_template('activity.html',
                            rows=rows,
                            contact_name=contact_name,
                            contact_id=contact_id,
-                           username=g.user['client_name'] )
+                           username=g.user['client_name'])
 
 
-@app.route('/activity-log/<int:contact_id>', methods=["POST"] )
+@app.route('/activity-log/<int:contact_id>', methods=["POST"])
 @login_required
 def add_log(contact_id):
-    
+
     action = request.form['action']
     description = request.form['description']
     date = request.form['date']
@@ -227,6 +226,13 @@ def add_log(contact_id):
     return redirect(url_for('get_history', contact_id=contact_id))
 
 
+@app.route('/activity-log/<int:contact_id>/delete-<int:activity_id>', methods=["POST"])
+@login_required
+def delete_activity(contact_id, activity_id):
+
+    activities.delete(activity_id, contact_id, g.user['id'])
+
+    return redirect(url_for('get_history', contact_id=contact_id))
 
 
 if __name__ == "__main__":
