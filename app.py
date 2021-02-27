@@ -5,6 +5,8 @@ from models.activity import Activity
 from utility.decor import login_required
 from utility.helpers import conn_pool, conv_datetime
 from psycopg2 import DatabaseError, DataError, OperationalError, InternalError, ProgrammingError, errors
+import arrow
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'key'
@@ -201,7 +203,7 @@ def behind():
 def get_history(contact_id):
 
     contact_name = phonebook.get_by_id(contact_id)['name']
-    rows = activities.get_history(g.user['id'], contact_id).fetchall()
+    rows = activities.get_all(g.user['id'], contact_id)
 
     return render_template('activity.html',
                            rows=rows,
@@ -210,7 +212,7 @@ def get_history(contact_id):
                            username=g.user['client_name'])
 
 
-@app.route('/activity-log/<int:contact_id>', methods=["POST"])
+@app.route('/<int:contact_id>/activity-log', methods=["POST"])
 @login_required
 def add_log(contact_id):
 
@@ -218,15 +220,15 @@ def add_log(contact_id):
     description = request.form['description']
     date = request.form['date']
     time = request.form['time']
-    date_time = conv_datetime(date, time)
+    
 
-    activities.new_action(action, description, date_time,
+    activities.add(action, description, date, time,
                           g.user['id'], contact_id)
 
     return redirect(url_for('get_history', contact_id=contact_id))
 
 
-@app.route('/activity-log/<int:contact_id>/delete-<int:activity_id>', methods=["POST"])
+@app.route('/<int:contact_id>/activity-log/delete-<int:activity_id>', methods=["POST"])
 @login_required
 def delete_activity(contact_id, activity_id):
 
