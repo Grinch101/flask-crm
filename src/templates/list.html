@@ -20,7 +20,7 @@
       <td> {{i}} </td>
       <td>{{dic['name']}}</td>
       <td>{{dic['phone']}}</td>
-      <form method="POST" action="{{url_for('delete_contact', id=dic['id']) }}">
+      <form method="POST" action="{{url_for('contact.delete', id=dic['id']) }}">
         <td>
           <button name="DELETE" value="{{dic['id']}}" type="submit" class="btn btn-danger">
             Delete
@@ -29,7 +29,7 @@
       </form>
 
       
-      <form method="GET" action="{{ url_for('get_history' , contact_id = dic['id']) }}" name ="log-form">
+      <form method="GET" action="{{ url_for('activity.get_all' , contact_id = dic['id']) }}" name ="log-form">
         <td>
           <button name="contact_id" value="{{dic['id']}}" type="submit" class="btn btn-info">
             Log

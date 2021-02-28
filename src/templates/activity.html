@@ -5,7 +5,7 @@
 <div name='whole form' class='jumbotron'>
   <h3>Activity log for contact: {{contact_name}}</h3>
   <br>
-  <form method="POST" name="save-log-form" action="{{url_for('add_log' , contact_id = contact_id)}}">
+  <form method="POST" name="save-log-form" action="{{url_for('activity.add' , contact_id = contact_id)}}">
     <input type="date" name="date" id="">
     <input type="time" name="time" id="">
     <input type="text" name="description">
@@ -32,7 +32,7 @@
         <p>{{username}} contacted {{contact_name}} through {{row['action']}}</p>
 
         <footer class="blockquote-footer"> {{row['description']}}</footer>
-        <form action="{{url_for('delete_activity', activity_id = row['id'], contact_id = contact_id )}}" 
+        <form action="{{url_for('activity.delete', activity_id = row['id'], contact_id = contact_id )}}" 
         method="POST">
           <button type="submit" class="btn btn-danger" value="{{row['id']}}">Delete</button>
 

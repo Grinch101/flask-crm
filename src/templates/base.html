@@ -39,20 +39,17 @@
 
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{url_for('index')}}">Home</a>
+    <a class="navbar-brand" href="{{url_for('contact.index')}}">Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-item nav-link active" href="{{url_for('table')}}">List <span class="sr-only">(current)</span></a>
-      </div>
-      <div class="navbar-nav">
-        <a class="nav-item nav-link active" href="{{url_for('behind')}}">Behind the scene </a>
+        <a class="nav-item nav-link active" href="{{url_for('contact.get_all')}}">List <span class="sr-only">(current)</span></a>
       </div>
     </div>
     <div>
-      <form action="{{url_for('logout')}}" method="POST">
+      <form action="{{url_for('user.logout')}}" method="POST">
         <button class="w-80 btn btn-dark btn-primary" type="submit" name="signout" value='CLICKED'>Logout</button>
       </form>
     </div>
