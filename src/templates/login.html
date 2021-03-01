@@ -24,13 +24,6 @@
     <a class="" href="{{url_for('user.signup_form')}}">Sign up</a>
   </div>
 </div>
-{% if get_flashed_messages()[0] %}
-<div class="alert alert-success" role="alert">
-  <h4 class="alert-heading">!</h4>
-  <p>{{get_flashed_messages()[0]}}</p>
-</div>
-{% endif %}
-
 
 
 {% endblock content %}

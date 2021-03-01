@@ -41,12 +41,7 @@
         <button type="submit" name="Save" class="btn btn-primary">Save</button>
       </div>
     </form>
-    {% if get_flashed_messages()[0] %}
-    <div class="alert alert-success" role="alert">
-      <h4 class="alert-heading">Saved!</h4>
-      <p>{{get_flashed_messages()[0]}}</p>
-    </div>
-    {% endif %}
+
     
 
 {% endblock content %}
