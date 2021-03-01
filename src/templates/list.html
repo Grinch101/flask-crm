@@ -3,7 +3,9 @@
 {% block content %}
 
 
+
 <h1>{{username}}'s phonebook</h1>
+<h4> </h4>
 <table class="table">
   <thead>
     <tr>
@@ -15,19 +17,17 @@
     </tr>
   </thead>
   <tbody>
+    <tr></tr>
     <tr>
       {% for i , dic in enumerate(mylist , start=1) %}
       <td> {{i}} </td>
       <td>{{dic['name']}}</td>
       <td>{{dic['phone']}}</td>
-      <form method="POST" action="{{url_for('contact.delete', id=dic['id']) }}">
         <td>
-          <button name="DELETE" value="{{dic['id']}}" type="submit" class="btn btn-danger">
+          <button name="DELETE" type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_all_activities {{dic['id']}}">
             Delete
           </button>
         </td>
-      </form>
-
       
       <form method="GET" action="{{ url_for('activity.get_all' , contact_id = dic['id']) }}" name ="log-form">
         <td>
@@ -37,16 +37,37 @@
       </form>
       </td>
     </tr>
-    {% endfor %}
+   
 
   </tbody>
 </table>
 
-{% if get_flashed_messages()[0] %}
-<div class="alert alert-warning" role="alert">
-  <h4 class="alert-heading">WARNING!</h4>
-  <p>{{get_flashed_messages()[0]}}</p>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete_all_activities {{dic['id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delete Everything?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        You are trying to delete this contact as well as its log.
+        <h4>Continue?</h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <form method="POST" action="{{url_for('contact.delete', id=dic['id']) }}">
+        <button type="submit" class="btn btn-primary">Delete</button></form>
+      </div>
+    </div>
+  </div>
 </div>
-{% endif %}
+{% endfor %}
 
 {% endblock content %}
+
