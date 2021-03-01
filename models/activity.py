@@ -14,11 +14,10 @@ class Activity():
                                        description, arrow_time, user_id, contact_id))
 
 
-    def get_all(self, user_id, contact_id):
-
+    def get_all(self, contact_id):
+        
         return query('activity/get_all', vals=(contact_id,))
 
 
-    def delete(self, activity_id, contact_id, user_id):
-
-        query('activity/delete', vals=(activity_id, contact_id, user_id))
+    def delete(self, activity_id, contact_id):
+        query('activity/delete', vals=(activity_id, contact_id))
