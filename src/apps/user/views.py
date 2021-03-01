@@ -8,13 +8,13 @@ user = Blueprint('user', __name__)
 users_handler = User()
 
 
-@user.route('/user/login', methods=["GET"])
+@user.route('/login', methods=["GET"])
 def login_form():
 
     return render_template('login.html')
 
 
-@user.route('/user/login_check', methods=["POST"])
+@user.route('/login_check', methods=["POST"])
 def login_check():
 
     email = request.form.get("inputEmail")
@@ -32,13 +32,13 @@ def login_check():
         return redirect(url_for('user.login_form'))
 
 
-@user.route('/user/signup', methods=["GET"])
+@user.route('/signup', methods=["GET"])
 def signup_form():
 
     return render_template('signup.html')
 
 
-@user.route('/user/signup', methods=["POST"])
+@user.route('/signup', methods=["POST"])
 def signup():
 
     email = request.form.get("inputEmail")
@@ -58,7 +58,7 @@ def signup():
         return redirect(url_for('user.signup_form'))
 
 
-@user.route('/user/logout', methods=['POST'])
+@user.route('/logout', methods=['POST'])
 @login_required
 def logout():
 

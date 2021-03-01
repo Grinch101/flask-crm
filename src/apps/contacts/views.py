@@ -1,23 +1,20 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, g
 from models.contact import Contact
 from utility.decor import login_required
-
+from psycopg2 import errors
 
 phonebook = Contact()
 
 contact = Blueprint('contact', __name__)
 
-
 @contact.route('/', methods=["GET"])
-@contact.route('/index', methods=["GET"])
-@contact.route('/home', methods=["GET"])
 @login_required
 def index():
 
     return render_template('index.html', username=g.user['client_name'])
 
 
-@contact.route('/contact/add', methods=["POST"])
+@contact.route('/add', methods=["POST"])
 @login_required
 def add():
 
@@ -30,7 +27,7 @@ def add():
     return redirect(url_for('contact.index'))
 
 
-@contact.route('/contact/all', methods=["GET"])
+@contact.route('/all', methods=["GET"])
 @login_required
 def get_all():
 
@@ -42,8 +39,8 @@ def get_all():
 @contact.route('/contacts/delete:<id>', methods=["POST"])
 @login_required
 def delete(id):
-
     phonebook.delete(id)
     flash(f"ID:{id} Deleted")
 
-    return make_response(redirect(url_for('contact.get_all')))
+    return redirect(url_for('contact.get_all'))
+
