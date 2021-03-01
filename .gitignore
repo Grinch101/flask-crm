@@ -5,6 +5,6 @@ __pycache__
 *.pyc
 A
 templates/debug.log
-
+Procfile
 templates/T2.html
 T1.py
