@@ -70,6 +70,13 @@ def rollback_changes(error):
 
     return render_template('error.html', error=error)
 
+@app.route('/')
+@login_required
+def index():
+    
+    return render_template('index.html', username=g.user['client_name'])
+
+
 
 
 if __name__ == "__main__":
