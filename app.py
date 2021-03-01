@@ -1,12 +1,10 @@
-from flask import render_template, request, g
-from models.contact import Contact
+from flask import render_template, request, g, redirect, url_for
 from models.user import User
-from models.activity import Activity
 from src.factory import creat_app
 from src.config import DevelopmentConfig, ProductionConfig
 from utility.decor import login_required
 from utility.helpers import conn_pool
-from psycopg2 import DatabaseError, DataError, errors
+from psycopg2 import DatabaseError, DataError
 
 
 # create app and register blueprints
@@ -20,6 +18,8 @@ connections = conn_pool(1, 10)
 users_handler = User()
 
 #  injecting some functions to Jinja
+
+
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
@@ -70,13 +70,12 @@ def rollback_changes(error):
 
     return render_template('error.html', error=error)
 
+
 @app.route('/')
 @login_required
 def index():
-    
-    return render_template('index.html', username=g.user['client_name'])
 
-
+    return redirect('/contact-management/')
 
 
 if __name__ == "__main__":
