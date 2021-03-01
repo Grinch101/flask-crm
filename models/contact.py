@@ -30,7 +30,7 @@ class Contact():
 
     def delete(self, row_id):
 
-        return query('contact/delete', vals=(row_id,))
+        return query('contact/delete', vals=(row_id,row_id)) # Can you suggest sth better?
 
     def update(self, row_id, new_entry):
 
