@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, g
-from models.activity import Activity
-from models.contact import Contact
+from src.models.activity import Activity
+from src.models.contact import Contact
 from utility.decor import login_required
 
 

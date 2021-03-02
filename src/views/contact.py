@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response, g
-from models.contact import Contact
+from src.models.contact import Contact
 from utility.decor import login_required
 from psycopg2 import errors
 

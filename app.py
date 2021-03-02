@@ -1,5 +1,5 @@
 from flask import render_template, request, g, redirect, url_for
-from models.user import User
+from src.models.user import User
 from src.factory import creat_app
 from src.config import DevelopmentConfig, ProductionConfig
 from utility.decor import login_required
@@ -75,7 +75,7 @@ def rollback_changes(error):
 @login_required
 def index():
 
-    return redirect('/contact-management/')
+    return redirect('/contact')
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import render_template, request, flash, redirect, url_for, make_response, g
-from models.user import User
+from src.models.user import User
 from utility.decor import login_required
 
 user = Blueprint('user', __name__)
