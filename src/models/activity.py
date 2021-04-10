@@ -19,5 +19,5 @@ class Activity():
         return query('activity/get_all', vals=(contact_id,))
 
 
-    def delete(self, activity_id, contact_id):
-        query('activity/delete', vals=(activity_id, contact_id))
+    def delete(self, activity_id):
+        query('activity/delete', vals=(activity_id, ))
