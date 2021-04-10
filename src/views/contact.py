@@ -10,8 +10,8 @@ contact = Blueprint('contact', __name__)
 @contact.route('/', methods=["GET"])
 @login_required
 def index():
-
-    return render_template('index.html', username=g.user['client_name'])
+    username=g.user['client_name']
+    return f'Your index page; {username} \n enter your contact'
 
 
 @contact.route('/add', methods=["POST"])
@@ -22,7 +22,7 @@ def add():
     input_number = request.form['Number']
     phonebook.add(g.user['id'], input_name, input_number)
 
-    flash(f'{input_number} for {input_name} has been saved')
+    # flash(f'{input_number} for {input_name} has been saved')
 
     return redirect(url_for('contact.index'))
 
@@ -32,11 +32,10 @@ def add():
 def get_all():
 
     cur = phonebook.get_by_user(g.user['id'])
+    return {'mylist':cur.fetchall(), 'username':g.user['client_name']}
 
-    return render_template('list.html', mylist=cur, username=g.user['client_name'])
 
-
-@contact.route('/delete:<id>', methods=["POST"])
+@contact.route('/delete/<int:id>', methods=["DELETE"])
 @login_required
 def delete(id):
     phonebook.delete(id)

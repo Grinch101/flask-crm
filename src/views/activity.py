@@ -15,14 +15,12 @@ activity = Blueprint('activity', __name__)
 def get_all(contact_id):
 
     contact_name = phonebook.get_by_id(contact_id)['name']
+    cur = activities.get_all(contact_id)
 
-    rows = activities.get_all(contact_id)
-
-    return render_template('activity.html',
-                           rows=rows,
-                           contact_name=contact_name,
-                           contact_id=contact_id,
-                           username=g.user['client_name'])
+    return {'actions':cur.fetchall(),
+            'contact_name':contact_name,
+            'contact_id':contact_id,
+            'username':g.user['client_name']}
 
 
 @activity.route('/<int:contact_id>', methods=["POST"])
@@ -40,10 +38,10 @@ def add(contact_id):
     return redirect(url_for('activity.get_all', contact_id=contact_id))
 
 
-@activity.route('/<int:contact_id>/delete:<int:activity_id>', methods=["POST"])
+@activity.route('/<int:contact_id>/delete/<int:activity_id>', methods=["DELETE"])
 @login_required
 def delete(contact_id, activity_id):
 
-    activities.delete(activity_id, contact_id)
+    activities.delete(activity_id)
 
     return redirect(url_for('activity.get_all', contact_id=contact_id))

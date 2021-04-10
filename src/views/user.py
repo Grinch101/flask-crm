@@ -8,10 +8,10 @@ user = Blueprint('user', __name__)
 users_handler = User()
 
 
-@user.route('/login', methods=["GET"])
-def login_form():
+# @user.route('/login', methods=["GET"])
+# def login_form():
 
-    return render_template('login.html')
+#     return render_template('login.html')
 
 
 @user.route('/login_check', methods=["POST"])
@@ -29,13 +29,14 @@ def login_check():
     else:
 
         flash('Wrong Email or Password. Please try again, or Sign-up!')
-        return redirect(url_for('user.login_form'))
+        # return redirect(url_for('user.login_form'))
+        return "No such user!"
 
 
-@user.route('/signup', methods=["GET"])
-def signup_form():
+# @user.route('/signup', methods=["GET"])
+# def signup_form():
 
-    return render_template('signup.html')
+#     return render_template('signup.html')
 
 
 @user.route('/signup', methods=["POST"])
