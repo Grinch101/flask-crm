@@ -75,7 +75,7 @@ def rollback_changes(error):
 @login_required
 def index():
 
-    return redirect('/contact')
+    return redirect('/contacts')
 
 
 if __name__ == "__main__":
