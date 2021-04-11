@@ -1,42 +1,27 @@
-from flask import Blueprint
-from flask import render_template, request, flash, redirect, url_for, make_response, g
+from flask import request, make_response, g, Blueprint, jsonify
 from src.models.user import User
 from utility.decor import login_required
+
 
 user = Blueprint('user', __name__)
 
 users_handler = User()
 
 
-# @user.route('/login', methods=["GET"])
-# def login_form():
-
-#     return render_template('login.html')
-
-
-@user.route('/login_check', methods=["POST"])
-def login_check():
+@user.route('/login', methods=["POST"])
+def login():
 
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
         user_id = users_handler.get_by_email(email)['id']
-        response = make_response(redirect(url_for('contact.index')))
+        response = make_response(jsonify('Successful Login') , 200 )
         response.set_cookie('user_id', str(user_id))
         return response
 
     else:
-
-        flash('Wrong Email or Password. Please try again, or Sign-up!')
-        # return redirect(url_for('user.login_form'))
-        return "No such user!"
-
-
-# @user.route('/signup', methods=["GET"])
-# def signup_form():
-
-#     return render_template('signup.html')
+        return make_response(jsonify('Email and password are mismatched! please retry!'), 400)
 
 
 @user.route('/signup', methods=["POST"])
@@ -51,18 +36,20 @@ def signup():
         users_handler.add(client_name, email, password)
         user_id = users_handler.get_by_email(email)['id']
 
-        response = make_response(redirect(url_for('contact.index')))
+        response =  make_response( jsonify('user created!', f'ID is {user_id}') , 201 )
         response.set_cookie('user_id', str(user_id))
         return response
     else:
-        flash('Email in use, please login')
-        return redirect(url_for('user.signup_form'))
+
+        return make_response( jsonify("Signup failed, email's already in use ") , 400)
 
 
-@user.route('/logout', methods=['POST'])
+@user.route('/logout', methods=['DELETE'])
 @login_required
 def logout():
 
-    response = make_response(redirect(url_for('user.login_form')))
+    response = make_response(jsonify('cookie deleted'), 200)
     response.set_cookie('user_id', "", max_age=0)
     return response
+
+

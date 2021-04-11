@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, g, flash
+from flask import  g, make_response, jsonify
 from functools import wraps
 
 ####### Define Decorator #########
@@ -12,6 +12,6 @@ def login_required(func):
             
             return func(*args, **kwargs)
         else:
-            flash("Please Login first!")
-            return redirect(url_for(('user.login_form')))
+
+            return make_response(jsonify('Please login!'), 401)
     return wrap
