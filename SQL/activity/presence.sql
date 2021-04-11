@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM activities WHERE id = %s;

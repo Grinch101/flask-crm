@@ -29,8 +29,10 @@ class Contact():
         
 
     def delete(self, row_id):
-
-        return query('contact/delete', vals=(row_id,row_id)) # Can you suggest sth better?
+        if query('contact/presence', vals = (row_id,)).fetchone()['count'] >= 1:
+            return query('contact/delete', vals=(row_id,row_id)) # Can you suggest sth better?
+        else:
+            return False
 
     def update(self, row_id, new_entry):
 

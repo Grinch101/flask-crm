@@ -20,4 +20,7 @@ class Activity():
 
 
     def delete(self, activity_id):
-        query('activity/delete', vals=(activity_id, ))
+        if query('activity/presence', vals=(activity_id,)).fetchone()['count'] >= 1:
+            return query('activity/delete', vals=(activity_id, ))
+        else:
+            False
