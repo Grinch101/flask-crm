@@ -1,4 +1,4 @@
-from flask import render_template, request, g, redirect, url_for
+from flask import request, g, make_response, jsonify
 from src.models.user import User
 from src.factory import creat_app
 from src.config import DevelopmentConfig, ProductionConfig
@@ -18,8 +18,6 @@ connections = conn_pool(1, 10)
 users_handler = User()
 
 #  injecting some functions to Jinja
-
-
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
@@ -68,14 +66,7 @@ def rollback_changes(error):
     connections.putconn(g.conn)
     g.conn = None
 
-    return render_template('error.html', error=error)
-
-
-@app.route('/')
-@login_required
-def index():
-
-    return redirect('/contacts')
+    return make_response(jsonify("Database Error!") , 500 )
 
 
 if __name__ == "__main__":
