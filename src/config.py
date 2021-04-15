@@ -9,5 +9,5 @@ class DevelopmentConfig(Configuration):
 
 
 class ProductionConfig(Configuration):
-    SECRET_KEY = os.urandom(11)
+    SECRET_KEY = 'aVeryHardToBreakKey'
     DEBUG = False
