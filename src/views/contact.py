@@ -1,6 +1,7 @@
 from flask import Blueprint, make_response, g, jsonify, request
 from src.models.contact import Contact
 from utility.decor import login_required
+from utility.helpers import JSON_output
 from psycopg2 import errors
 
 phonebook = Contact()
@@ -10,8 +11,9 @@ contact = Blueprint('contact', __name__)
 @contact.route('/', methods=["GET"])
 @login_required
 def index():
-    username=g.user['client_name']
-    return make_response( jsonify(f'index page for user: ->{username}<-') , 200)
+    # I think this handler is of no use as well! should I drop it?
+    output = JSON_output(message='index page', g=g, cur= None)
+    return make_response(output, 200)
 
 
 @contact.route('/add', methods=["POST"])
@@ -20,9 +22,10 @@ def add():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    phonebook.add(g.user['id'], input_name, input_number)
+    cur = phonebook.add(g.user['id'], input_name, input_number)
+    output = JSON_output(message='contact added!', g=g, cur=cur)
 
-    return make_response(jsonify(f'{input_name}, {input_number} added'), 201)
+    return make_response(output, 201)
 
 
 @contact.route('/all', methods=["GET"])
@@ -30,15 +33,19 @@ def add():
 def get_all():
 
     cur = phonebook.get_by_user(g.user['id'])
-    return make_response( jsonify ( cur.fetchall()) , 200)
+    output = JSON_output(message='All contacts retrieved!', g=g, cur=cur)
+
+    return make_response(output , 200)
 
 
 @contact.route('/delete/<int:id>', methods=["DELETE"])
 @login_required
 def delete(id):
+    cur = phonebook.delete(id)
+    if cur:
+        output = JSON_output(message='contact deleted!', g=g, cur=cur)
 
-    if phonebook.delete(id):
-        return make_response(jsonify(f'Entity deleted {id}'), 200)
+        return make_response(output, 200)
     else:
-        return make_response( jsonify(f'id {id} was not found in the database') , 404)
+        return make_response(jsonify(f'id {id} was not found in the database') , 404)
 
