@@ -6,5 +6,9 @@ WHERE
 DELETE FROM
     contacts
 WHERE
-    id = %s;
+    id = %s
+RETURNING
+"name",
+phone,
+id AS contact_id;
 

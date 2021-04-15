@@ -1,4 +1,6 @@
 DELETE FROM
     activities
 WHERE
-    id = %s;
+    id = %s
+RETURNING
+id AS activity_id;
