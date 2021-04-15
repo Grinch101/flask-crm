@@ -19,8 +19,12 @@ class Contact():
 
 
     def get_by_id(self, row_id):
-        cur = query('contact/get_by_id', vals=(row_id,))
-        return cur.fetchone()
+        if query('contact/presence', vals = (row_id,)).fetchone()['count'] >= 1:
+            cur = query('contact/get_by_id', vals=(row_id,))
+            if cur:
+                return cur.fetchone()
+        else:
+            return False
 
 
     def get_all(self):
