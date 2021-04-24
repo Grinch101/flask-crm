@@ -6,3 +6,5 @@ SET
     client_name = %s
 WHERE
     id = %s
+RETURNING
+* ;
