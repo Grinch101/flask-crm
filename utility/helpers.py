@@ -1,11 +1,10 @@
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, RealDictCursor
+from psycopg2.extensions import AsIs
 from pathlib import Path
-from flask import g, jsonify
+from flask import g, make_response
 import arrow
-import plotly
-import plotly.graph_objects as go
 import json
 
 ##### Create Connection pool ######
@@ -28,7 +27,7 @@ def query(query, vals=""):
     with open(path, 'r') as f:
         query_text = str(f.read())
 
-    cur = g.conn.cursor(cursor_factory=DictCursor)
+    cur = g.conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(query_text, vals)
     return cur
 
@@ -44,13 +43,11 @@ def conv_datetime(date, time):
 
 
 ################ Secure User info on appContext #############
-def secure_g(g, attr='user', key='passkey'):
-    if g is not None:
-        g_obj = getattr(g, attr)
-        mydic = dict(g_obj)
-        mydic.pop(key)
-        return mydic
-    return []
+def secure_g(g):
+    user = dict(g.user)
+    user.pop('passkey')
+    return user
+
 
 ############## Convert cursor to dict type ###################
 
@@ -66,11 +63,11 @@ def fetcher(cur):
 ######### create an output dictionary containing
 #  all information to return to the client #########
 
-def JSON_output(message, g=None, cur=None, **kwargs):
+def json_output(message = None, data = None, error = None, http_code = 200 ):
     
-    return jsonify({'message':message,
-                    'info': {'user_info':secure_g(g),
-                            'query_info':fetcher(cur)
-                            },
-                    **kwargs
-                    })
+    return make_response(json.dumps({'info':message,
+                    'data': data,
+                    'error': error                    
+                    }), http_code)
+
+
