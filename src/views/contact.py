@@ -54,3 +54,25 @@ def delete(id):
         return json_output(error='user was not found!', http_code=404)
 
 
+@contact.route('/update/<int:id>', methods=['PUT'])
+@login_required
+def update(id):
+    if request.form is not None:
+        
+        new_name = request.form('new_name')
+        new_phone = request.form('new_phone')
+        update_keys = list(dict(request.form).keys())
+        update_vals = [new_name, new_phone]
+        cur = phonebook.update(g.user['id'],id, update_keys, update_vals)
+        if cur:
+            data = cur.fetchall()
+            return json_output(message='updated!', data = data) 
+        else:
+            if not cur[0] and cur[1] == '400':
+                json_output(error='Bad Request!', http_code= 400) # Bad request!
+            if not cur[0] and cur[1] == '401':
+                json_output(error='Unauthorized!', http_code= 401) # Unauthorized!
+    else: 
+        return json_output(error='Empty Request!', http_code= 400) # Bad request!
+
+

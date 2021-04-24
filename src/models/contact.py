@@ -1,4 +1,6 @@
 from utility.helpers import query
+from psycopg2.extras import DictCursor
+from flask import g
 
 
 ####
@@ -27,9 +29,9 @@ class Contact():
             return False
 
 
-    def get_all(self):
+    def get_all(self, user_id):
 
-        return query('contact/get_all')
+        return query('contact/get_all', vals=(user_id,))
         
 
     def delete(self, row_id):
@@ -38,16 +40,26 @@ class Contact():
         else:
             return False
 
-    def update(self, row_id, new_entry):
+    def update(self,user_id, contact_id, update_keys, update_vals):
+        cur = query('contact/get_by_id', vals=(contact_id,))
+        if cur.fetchone()['user_id'] == user_id:
 
-        row_id = new_entry['id']
-        name = new_entry['name']
-        phone = new_entry['phone']
-
-        return query('contact/update', vals=(name,
-                                      phone, row_id))
-
-
+            if query('contact/presence', vals = (contact_id,)).fetchone()['count'] >= 1:
+####################
+  
+                query_str = 'UPDATE contacts SET ' 
+                zipped = list(zip(update_keys, update_vals))
+                for item in range(len(zipped)):
+                    query_str = query_str + f" {zipped[0]} = {zipped[1]} ,"
+                query_str = query_str[:-1]
+                query_str + ' WHERE id = {contact_id} AND user_id = {user_id}'
+                query_str = query_str + 'RETURNING * ;'
+                cur = g.conn.cursor(cursor_factory = DictCursor)
+                cur.execute(query_str)
+                return cur
+####################
+            else: return (False, '400')
+        else: return (False, "401")
     def clear_all(self):
         
         return query('contact/truncate')
