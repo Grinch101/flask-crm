@@ -59,13 +59,21 @@ def delete(id):
 def update(id):
     if request.form is not None:
         
-        new_name = request.form('new_name')
-        new_phone = request.form('new_phone')
-        update_keys = list(dict(request.form).keys())
-        update_vals = [new_name, new_phone]
-        cur = phonebook.update(g.user['id'],id, update_keys, update_vals)
+        new_name = request.form.get('new_name')
+        new_phone = request.form.get('new_phone')
+
+        old_data = phonebook.get_by_id(id)
+        # old_data = cur.fetchone()
+        if not all([new_name,new_phone]):
+            if new_name is None:
+                new_name = old_data['name']
+            elif new_phone is None:
+                new_phone = old_data['phone']
+        
+
+        cur = phonebook.update(g.user['id'],id, new_name, new_phone)
         if cur:
-            data = cur.fetchall()
+            data = cur.fetchone()
             return json_output(message='updated!', data = data) 
         else:
             if not cur[0] and cur[1] == '400':
