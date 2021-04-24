@@ -1,19 +1,19 @@
-from flask import Blueprint, make_response, g, jsonify, request
+import json
+from flask import Blueprint, g, request
 from src.models.contact import Contact
 from utility.decor import login_required
-from utility.helpers import JSON_output
-from psycopg2 import errors
+from utility.helpers import json_output
 
 phonebook = Contact()
 
 contact = Blueprint('contact', __name__)
 
+
 @contact.route('/', methods=["GET"])
 @login_required
 def index():
     # I think this handler is of no use as well! should I drop it?
-    output = JSON_output(message='index page', g=g, cur= None)
-    return make_response(output, 200)
+    return json_output(message='index page')
 
 
 @contact.route('/add', methods=["POST"])
@@ -22,10 +22,12 @@ def add():
 
     input_name = request.form['Name']
     input_number = request.form['Number']
-    cur = phonebook.add(g.user['id'], input_name, input_number)
-    output = JSON_output(message='contact added!', g=g, cur=cur)
-
-    return make_response(output, 201)
+    if not all([input_name, input_number]):
+        return json_output(error='incomplete request!', http_code=401)
+    else:
+        cur = phonebook.add(g.user['id'], input_name, input_number)
+        data = cur.fetchall()
+        return json_output(message='contact added!', data=data, http_code=201)
 
 
 @contact.route('/all', methods=["GET"])
@@ -33,9 +35,11 @@ def add():
 def get_all():
 
     cur = phonebook.get_by_user(g.user['id'])
-    output = JSON_output(message='All contacts retrieved!', g=g, cur=cur)
-
-    return make_response(output , 200)
+    if cur:
+        data = cur.fetchall()
+        return json_output(message='All contacts retrieved!', data=data)
+    else:
+        return json_output(error='user not found!', http_code=404)
 
 
 @contact.route('/delete/<int:id>', methods=["DELETE"])
@@ -43,9 +47,10 @@ def get_all():
 def delete(id):
     cur = phonebook.delete(id)
     if cur:
-        output = JSON_output(message='contact deleted!', g=g, cur=cur)
+        data = cur.fetchone()
+        return json_output(message='contact deleted!', data=data)
 
-        return make_response(output, 200)
     else:
-        return make_response(jsonify(f'id {id} was not found in the database') , 404)
+        return json_output(error='user was not found!', http_code=404)
+
 
