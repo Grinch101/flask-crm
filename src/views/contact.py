@@ -26,7 +26,7 @@ def add():
         return json_output(error='incomplete request!', http_code=401)
     else:
         cur = phonebook.add(g.user['id'], input_name, input_number)
-        data = cur.fetchall()
+        data = cur.fetchone()
         return json_output(message='contact added!', data=data, http_code=201)
 
 
