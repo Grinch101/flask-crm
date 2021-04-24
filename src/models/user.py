@@ -14,14 +14,15 @@ class User():
 
 
     def get_by_email(self, email):
-
-        cur = query('user/get_by_email', vals=(email,))
-        return cur.fetchone()
+        if query('user/presence_using_email', vals=(email,)).fetchone()['count'] ==1:
+            return query('user/get_by_email', vals=(email,))
+        else:
+            return False
 
         
     def validate(self, email, password):
 
-        row = self.get_by_email(email)
+        row = self.get_by_email(email).fetchone()
 
         if row is None or row == []:
             return False
@@ -30,9 +31,10 @@ class User():
 
 
     def delete(self, user_id):
-
-        return query('user/delete', vals=(user_id,))
-
+        if query('user/presence', vals=(user_id,)).fetchone()['count']==1:
+            return query('user/delete', vals=(user_id,))
+        else:
+            return False
 
 
     def get_all(self):
@@ -40,22 +42,19 @@ class User():
         return query('user/get_all')
 
 
-    def update(self, row_id, new_entry):
-
-        email = new_entry['email']
-        password = new_entry['password']
-        client_name = new_entry['client_name']
-
-        return query('user/update',
-              vals=(email, password, client_name, row_id))
-
+    def update(self, user_id, new_email , new_name , new_password):
+        if query('user/presence', vals=(user_id,)).fetchone()['count']==1:
+            return query('user/update', vals=(new_email, new_password, new_name, user_id))
+        else:
+            return False
+    
 
     def get_by_id(self, user_id):
-        
-        cur = query('user/get_by_id', vals=(user_id,))
-        return cur.fetchone()
-
+        if query('user/presence', vals=(user_id,)).fetchone()['count']==1:
+            cur = query('user/get_by_id', vals=(user_id,))
+            return cur.fetchone()
+        else:
+            return False
 
     def clear_all(self):
-
         query('user/truncate')
