@@ -3,7 +3,7 @@ from src.models.user import User
 from src.factory import creat_app
 from src.config import DevelopmentConfig, ProductionConfig
 from utility.decor import login_required
-from utility.helpers import conn_pool
+from utility.helpers import conn_pool, json_output
 from psycopg2 import DatabaseError, DataError
 from jwt import DecodeError
 import jwt
@@ -20,6 +20,8 @@ connections = conn_pool(1, 10)
 users_handler = User()
 
 #  injecting some functions to Jinja
+
+
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,
@@ -41,20 +43,21 @@ def open_conn():
     global connections
     g.conn = connections.getconn()
 
-@app.before_request
-def user_auth():
-    if request.headers.get('JWT'):
-        token = request.headers['JWT']
-        secret_key = g.secret_key
-        try:
-            data = jwt.decode(token, key = secret_key ,algorithms=["HS256"])
-            user_id = int(data['user_id'])
-            g.user =  users_handler.get_by_id(user_id)
 
-        except DecodeError as e:
-            return jsonify(f'Token invalid,  {e}')
-    else:
-        g.user = None
+# @app.before_request
+# def user_auth():
+#     if request.headers.get('JWT'):
+#         token = request.headers['JWT']
+#         secret_key = g.secret_key
+#         try:
+#             data = jwt.decode(token, key=secret_key, algorithms=["HS256"])
+#             user_id = int(data['user_id'])
+#             g.user = users_handler.get_by_id(user_id)
+
+#         except DecodeError as e:
+#             return json_output(error='Token invalid,  {e}', http_code= 403) # forbidden
+#     else:
+#         g.user = None
 
 
 @app.after_request
@@ -80,7 +83,7 @@ def rollback_changes(error):
     connections.putconn(g.conn)
     g.conn = None
 
-    return make_response(jsonify("Database Error!") , 500 )
+    return json_output(error = f"Database Error! {error}", http_code =500)
 
 
 if __name__ == "__main__":
