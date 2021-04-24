@@ -28,4 +28,6 @@ class Activity():
         if query('contact/presence' , vals = (contact_id,)).fetchone()['count'] >= 1:
             if query('activity/presence', vals=(activity_id,)).fetchone()['count'] >= 1:
                 return query('activity/delete', vals=(activity_id, ))
-        return False
+
+            else: return (False, 'activity was not found!')
+        else: return (False, 'contact was not found!')
