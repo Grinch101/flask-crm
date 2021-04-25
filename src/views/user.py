@@ -20,7 +20,7 @@ def login():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-        user_id = users_handler.get_by_email(email).fetchone()['id']
+        user_id = users_handler.get_by_email(email)['id']
         token = jwt.encode( payload= {'user_id':user_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=10) } ,
                             key = secret_key, algorithm="HS256")
         

@@ -22,9 +22,10 @@ class User():
         
     def validate(self, email, password):
 
-        row = self.get_by_email(email).fetchone()
+        
+        row = self.get_by_email(email)
 
-        if row is None or row == []:
+        if row is None or row == False or row == []:
             return False
         else:
             return password == row['passkey']
