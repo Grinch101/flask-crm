@@ -28,7 +28,7 @@ class User():
         if row is None or row == False or row == []:
             return False
         else:
-            return password == row['passkey']
+            return password == row.fetchone()['passkey']
 
 
     def delete(self, user_id):

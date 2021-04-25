@@ -20,7 +20,7 @@ def login():
     password = request.form.get("inputPassword")
 
     if users_handler.validate(email, password):
-        user_id = users_handler.get_by_email(email)['id']
+        user_id = users_handler.get_by_email(email).fetchone()['id']
         token = jwt.encode( payload= {'user_id':user_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=10) } ,
                             key = secret_key, algorithm="HS256")
         
@@ -60,7 +60,7 @@ def logout():
 
 @user.route('/current_user', methods=['GET'])
 @login_required
-def user_info():
+def current_user():
     return json_output(message='user info', data=secure_g(g))
 
 
