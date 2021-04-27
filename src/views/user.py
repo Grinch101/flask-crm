@@ -34,13 +34,10 @@ def signup():
     email = request.form.get("inputEmail")
     password = request.form.get("inputPassword")
     client_name = request.form.get("client_name")
-    q_email = users_handler.get_by_email(email).fetchone()
-
-    if q_email['email'] != email:
+    if not users_handler.get_by_email(email):
         cur = users_handler.add(client_name, email, password)
-        data = cur.fetchall()
+        data = cur.fetchone()
         return json_output(message='user created!', data = data, http_code = 201)
-
     else:
         return json_output(error='signup failed, email in use!', http_code = 400)
 

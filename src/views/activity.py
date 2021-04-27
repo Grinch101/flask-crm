@@ -38,7 +38,7 @@ def add(contact_id):
     description = request.form['description']
     date = request.form['date']
     time = request.form['time']
-    if all(action, date, time):
+    if all([action, date, time]):
         cur = activities.add(action, description, date, time,
                              g.user['id'], contact_id)
         if cur:
