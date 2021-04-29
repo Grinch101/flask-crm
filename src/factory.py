@@ -10,5 +10,4 @@ def creat_app(config):
     app.register_blueprint(user, url_prefix='/auth/')
     app.register_blueprint(contact, url_prefix='/contacts/')
     app.register_blueprint(activity, url_prefix='/activity/')
-
     return app

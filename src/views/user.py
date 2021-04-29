@@ -9,7 +9,6 @@ from utility.helpers import json_output, secure_g
 
 
 user = Blueprint('user', __name__)
-
 users_handler = User()
 
 
@@ -21,12 +20,20 @@ def login():
 
     if users_handler.validate(email, password):
         user_id = users_handler.get_by_email(email).fetchone()['id']
-        token = jwt.encode( payload= {'user_id':user_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=10) } ,
-                            key = secret_key, algorithm="HS256")
-        
-        return json_output(message='Logged in, token generated', data = token)        
+        token = jwt.encode(
+            payload={'user_id': user_id,
+                     'exp': datetime.datetime.utcnow()
+                     + datetime.timedelta(days=10)
+                     },
+            key=secret_key,
+            algorithm="HS256"
+        )
+        return json_output(message='Logged in, token generated', data=token)
     else:
-        return json_output(error='Wrong Email or Password! please retry!', http_code= 400)
+        return json_output(
+            error='Wrong Email or Password! please retry!',
+            http_code=400
+            )
 
 
 @user.route('/signup', methods=["POST"])
@@ -37,20 +44,25 @@ def signup():
     if not users_handler.get_by_email(email):
         cur = users_handler.add(client_name, email, password)
         data = cur.fetchone()
-        return json_output(message='user created!', data = data, http_code = 201)
+        return json_output(message='user created!', data=data, http_code=201)
     else:
-        return json_output(error='signup failed, email in use!', http_code = 400)
+        return json_output(error='signup failed, email in use!', http_code=400)
 
 # This route will be drop in the next commit
+
+
 @user.route('/logout', methods=['PUT'])
 @login_required
 def logout():
-    
     user_id = g.user['id']
     output = json_output(message='Logged out!')
-    wrong_token = jwt.encode( payload= {'user_id':user_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=1) } ,
-                            key = 'wrong_secret_key', algorithm="HS256")
-    # I should drop this, it's here just for fun!                        
+    wrong_token = jwt.encode(
+        payload={'user_id': user_id,
+                 'exp': datetime.datetime.utcnow()
+                 + datetime.timedelta(days=1)},
+        key='wrong_secret_key',
+        algorithm="HS256")
+    # I should drop this, it's here just for fun!
     output.headers['JWT'] = wrong_token
     return output
 
@@ -67,15 +79,11 @@ def user_update():
 
     if request.form is not None:
         column_list = list(dict(request.form).keys())
-        
         new_email = request.form.get('new_email')
         new_password = request.form.get('new_password')
         new_name = request.form.get('new_name')
-
         all_input_list = [new_email, new_name, new_password]
-        
         user_id = g.user['id']
-
         current_info = users_handler.get_by_id(user_id)
         if current_info:
             old_password = current_info['passkey']
@@ -89,11 +97,13 @@ def user_update():
             if new_password is None:
                 new_password = old_password
 
-            cur = users_handler.update(user_id, new_email, new_name, new_password)
+            cur = users_handler.update(
+                user_id, new_email, new_name, new_password)
             data = dict(cur.fetchone())
             data.pop('passkey')
-            data = {**data , 'updated columns':column_list}
-            return json_output(message='updated',data=data)
-
-        else: return json_output(error = 'User Not found!', http_code = 400)
-    else: return json_output(error = 'incomplete request!', http_code= 400)
+            data = {**data, 'updated columns': column_list}
+            return json_output(message='updated', data=data)
+        else:
+            return json_output(error='User Not found!', http_code=400)
+    else:
+        return json_output(error='incomplete request!', http_code=400)
