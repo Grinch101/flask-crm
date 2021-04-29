@@ -1,5 +1,3 @@
-import os
-
 class Configuration:
     DEBUG = True
 
@@ -11,3 +9,8 @@ class DevelopmentConfig(Configuration):
 class ProductionConfig(Configuration):
     SECRET_KEY = 'aVeryHardToBreakKey'
     DEBUG = False
+
+class TestingConfig(Configuration):
+    TESTING = True
+    USERNAME = 'admin'
+    PASSWORD = 'admin'
