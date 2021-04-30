@@ -19,9 +19,8 @@ connections = conn_pool(1, 10)
 ############## initiate models ############
 users_handler = User()
 
+
 #  injecting some functions to Jinja
-
-
 @app.context_processor
 def inject_func():
     return dict(enumerate=enumerate,

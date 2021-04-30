@@ -1,15 +1,13 @@
-from app import app, connections
-from src.config import TestingConfig
+from app import app
+from app.src.config import TestingConfig
 import pytest
-import json
-from flask import g, current_app, Response
-
+from flask import g, Response
 
 
 @pytest.fixture
 def app_runner():
     global app
-    global TestingConfig
+    global TestingConfigpp
     app.config.from_object(TestingConfig)
     return app
 
@@ -30,7 +28,7 @@ def test_g_contents(app_with_g_ctx):
     with app.test_request_context():
         app.preprocess_request()
         assert g.conn is not None
-        app.process_response(Response()) 
+        app.process_response(Response('This is an empty response!')) 
         # An empty response was passed to make the process_response work!
         assert g.conn is None
 
