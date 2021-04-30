@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 setup(
@@ -7,7 +7,7 @@ setup(
         py_modules=['app'], # the file that needs to be installed
         install_requirs=[
                 'flask',
-                'jwt'],
+                'Flask-JWT'],
         entry_points='''
                 [console_scripts]
                 app=app:app
