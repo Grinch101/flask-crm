@@ -1,7 +1,10 @@
+# import sys
+# sys.path.insert(0, "c:/Users/MrGrinch/Desktop/tests/simple_phoneBook")
 from app import app
-from app.src.config import TestingConfig
+from src.config import TestingConfig
 import pytest
 from flask import g, Response
+import json
 
 
 @pytest.fixture
@@ -23,6 +26,7 @@ def client(app_runner):
     with app.test_client() as client:
         yield client
 
+
 ##########################
 def test_g_contents(app_with_g_ctx):
     with app.test_request_context():
@@ -41,4 +45,3 @@ def test_signup(client):
                            )
     data = json.loads(rs.data)['data']
     assert rs.status_code == 201
-
