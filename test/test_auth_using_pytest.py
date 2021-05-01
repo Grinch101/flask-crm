@@ -120,7 +120,7 @@ def test_current_user(client):
     assert data is not None
 
 
-def test_user_update(app_runner):
+def test_login3(app_runner):
     with app.test_request_context('/auth/signup',
                             data={'inputEmail': 'Neda2',
                                     'inputPassword': 'Neda',
