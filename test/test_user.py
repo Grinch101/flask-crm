@@ -1,12 +1,5 @@
 import json
-
-
-def extract(response):
-    info = json.loads(response.data)['info']
-    data = json.loads(response.data)['data']
-    error = json.loads(response.data)['error']
-    return info, data, error
-
+from test.conftest import extract
 
 def test_user_bp(client):
 
