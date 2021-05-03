@@ -49,17 +49,11 @@ def close_conn(response):
     if g.conn is not None:
         global app
         global connections
-        if app.config['TESTING']:
-            g.conn.rollback()
-            connections.putconn(g.conn)
-            g.conn = None
-            return response
-        elif not app.config['TESTING']:
-            g.conn.commit()
-            g.conn.cursor().close()
-            connections.putconn(g.conn)
-            g.conn = None
-            return response
+        g.conn.commit()
+        g.conn.cursor().close()
+        connections.putconn(g.conn)
+        g.conn = None
+        return response
     else:
         return response
 
