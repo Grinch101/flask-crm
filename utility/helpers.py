@@ -15,7 +15,6 @@ def conn_pool(minconn, maxconn, /,
               database='phonebook',
               user='postgres',
               password=1):
-
     return ThreadedConnectionPool(minconn,
                                   maxconn,
                                   host=host,
@@ -26,24 +25,19 @@ def conn_pool(minconn, maxconn, /,
 
 ############ query func  ##########
 def query(query, vals=""):
-
     query = "c:/Users/MrGrinch/Desktop/tests/simple_phoneBook/sql/" + query + ".sql"
     path = Path(query)
-
     with open(path, 'r') as f:
         query_text = str(f.read())
-
     cur = g.conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(query_text, vals)
     return cur
 
 
 ############## convet date and time to datetime ############
-
 def conv_datetime(date, time):
     date = str(date)
     time = str(time)
-
     arrow_time = arrow.get(f'{date} {time}', 'YYYY-MM-DD HH:mm')
     return arrow_time.format('h:m A - dddd MMM Do, YYYY')
 
@@ -70,7 +64,6 @@ def fetcher(cur):
 #  all information to return to the client #########
 
 def json_output(message=None, data=None, error=None, http_code=200):
-
     return make_response(json.dumps({'info': message,
                                      'data': data,
                                      'error': error
