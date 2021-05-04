@@ -27,7 +27,7 @@ def test_contact_getall(client, TOKEN):
     assert data != []
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope='module')
 def CONTACTS(client, TOKEN):
     rs5 = client.get('contacts/all',
                      headers={'JWT': TOKEN})
@@ -64,6 +64,7 @@ def test_postupdate_status(client, TOKEN):
     assert phone == '999'
 
 
+@pytest.mark.run(order=-2)
 def test_delete_contacts(client, TOKEN, CONTACTS):
     ID = CONTACTS[0]['id']
     rs7 = client.delete(f'contacts/delete/{ID}',
@@ -73,6 +74,7 @@ def test_delete_contacts(client, TOKEN, CONTACTS):
     assert rs7.status_code == 200
 
 
+@pytest.mark.run(order=-1)
 def test_postdelete(client, TOKEN, CONTACTS):
     ID = CONTACTS[0]['id']
     rs8 = client.get('/contacts/all',
