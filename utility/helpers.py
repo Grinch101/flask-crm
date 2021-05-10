@@ -25,7 +25,7 @@ def conn_pool(minconn, maxconn, /,
 
 ############ query func  ##########
 def query(query, vals=""):
-    query = "c:/Users/MrGrinch/Desktop/tests/simple_phoneBook/sql/" + query + ".sql"
+    query = "c:/Users/MrGrinch/Desktop/tests/flask-crm/sql/" + query + ".sql"
     path = Path(query)
     with open(path, 'r') as f:
         query_text = str(f.read())
