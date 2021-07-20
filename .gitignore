@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+virtualenv/
 # C extensions
 *.so
 
@@ -130,3 +130,14 @@ dmypy.json
 crm.code-workspace
 procedure.bat
 .vscode/settings.json
+
+.vscode
+test/test_auth_using_unittest.py
+test/token.txt
+test/temp.txt
+test/new_user_token.txt
+test/masoud_token.txt
+token.txt
+*.rar
+T4.py
+test/activity_id.txt

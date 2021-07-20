@@ -4,7 +4,7 @@ class Configuration:
 
 class DevelopmentConfig(Configuration):
     SECRET_KEY = "My_Key"
-
+    TESTING = False
 
 class ProductionConfig(Configuration):
     SECRET_KEY = 'aVeryHardToBreakKey'
@@ -14,3 +14,4 @@ class TestingConfig(Configuration):
     TESTING = True
     USERNAME = 'admin'
     PASSWORD = 'admin'
+    SECRET_KEY = "My_Key"

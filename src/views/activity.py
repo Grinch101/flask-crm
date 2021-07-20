@@ -55,7 +55,7 @@ def add(contact_id):
                 methods=["DELETE"])
 @login_required
 def delete(contact_id, activity_id):
-    if all(contact_id, activity_id):
+    if all([contact_id, activity_id]):
         cur = activities.delete(contact_id, activity_id)
         if cur:
             data = cur.fetchone()

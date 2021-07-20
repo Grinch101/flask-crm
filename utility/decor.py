@@ -19,7 +19,10 @@ def login_required(func):
                 data = jwt.decode(token, key=secret_key, algorithms=["HS256"])
                 user_id = int(data['user_id'])
                 g.user = users_handler.get_by_id(user_id)
-                return func(*args, **kwargs)
+                if g.user:
+                    return func(*args, **kwargs)
+                else:
+                    return json_output(error='User not found!', http_code= 404) # not found
             except DecodeError as e:
                 return json_output(error='Token invalid,  {e}', http_code= 403) # forbidden!
         else:

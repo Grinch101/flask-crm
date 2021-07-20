@@ -30,10 +30,15 @@ def login():
         )
         return json_output(message='Logged in, token generated', data=token)
     else:
-        return json_output(
-            error='Wrong Email or Password! please retry!',
-            http_code=400
+        if users_handler.get_by_email(email):
+            return json_output(
+                error='Wrong Email or Password! please retry!',
+                http_code=400
             )
+        else:
+            return json_output(error='email not found, please sign up',
+                               http_code=404
+                               )
 
 
 @user.route('/signup', methods=["POST"])
@@ -79,31 +84,22 @@ def user_update():
 
     if request.form is not None:
         column_list = list(dict(request.form).keys())
-        new_email = request.form.get('new_email')
-        new_password = request.form.get('new_password')
-        new_name = request.form.get('new_name')
-        all_input_list = [new_email, new_name, new_password]
         user_id = g.user['id']
         current_info = users_handler.get_by_id(user_id)
-        if current_info:
-            old_password = current_info['passkey']
-            old_email = current_info['email']
-            old_name = current_info['client_name']
+        current_info = dict(current_info)
+        for item in column_list:
+            current_info[item] = request.form.get(item)
 
-            if new_email is None:
-                new_email = old_email
-            if new_name is None:
-                new_name = old_name
-            if new_password is None:
-                new_password = old_password
+        cur = users_handler.update(
+                        user_id,
+                        current_info['email'],
+                        current_info['client_name'],
+                        current_info['passkey'])
+                        
+        data = dict(cur.fetchone())
+        data.pop('passkey')
+        data = {**data, 'updated columns': column_list}
+        return json_output(message='updated', data=data)
 
-            cur = users_handler.update(
-                user_id, new_email, new_name, new_password)
-            data = dict(cur.fetchone())
-            data.pop('passkey')
-            data = {**data, 'updated columns': column_list}
-            return json_output(message='updated', data=data)
-        else:
-            return json_output(error='User Not found!', http_code=400)
     else:
         return json_output(error='incomplete request!', http_code=400)
