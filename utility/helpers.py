@@ -12,8 +12,8 @@ import json
 
 def conn_pool(minconn, maxconn, /,
               host='localhost',
-              database='phonebook',
-              user='postgres',
+              database='flask_crm',
+              user='grinch',
               password=1):
     return ThreadedConnectionPool(minconn,
                                   maxconn,
@@ -25,7 +25,7 @@ def conn_pool(minconn, maxconn, /,
 
 ############ query func  ##########
 def query(query, vals=""):
-    query = "c:/Users/MrGrinch/Desktop/tests/flask-crm/sql/" + query + ".sql"
+    query = "/home/grinch/repos/flask-crm/SQL/" + query + ".sql"
     path = Path(query)
     with open(path, 'r') as f:
         query_text = str(f.read())
