@@ -2,7 +2,7 @@ import json
 import datetime
 import jwt
 from jwt import DecodeError
-from flask import request,  g, Blueprint, jsonify
+from flask import request,  g, Blueprint
 from src.models.user import User
 from utility.decor import login_required
 from utility.helpers import json_output, secure_g
@@ -15,8 +15,8 @@ users_handler = User()
 @user.route('/login', methods=["POST"])
 def login():
     secret_key = g.secret_key
-    email = request.form.get("inputEmail")
-    password = request.form.get("inputPassword")
+    email = request.json["inputEmail"]
+    password = request.json["inputPassword"]
 
     if users_handler.validate(email, password):
         user_id = users_handler.get_by_email(email).fetchone()['id']
@@ -43,9 +43,10 @@ def login():
 
 @user.route('/signup', methods=["POST"])
 def signup():
-    email = request.form.get("inputEmail")
-    password = request.form.get("inputPassword")
-    client_name = request.form.get("client_name")
+    email = request.json["inputEmail"]
+    password = request.json["inputPassword"]
+    client_name = request.json["client_name"]
+
     if not users_handler.get_by_email(email):
         cur = users_handler.add(client_name, email, password)
         data = cur.fetchone()
@@ -82,8 +83,12 @@ def current_user():
 @login_required
 def user_update():
 
-    if request.form is not None:
-        column_list = list(dict(request.form).keys())
+    if request.json:
+        column_list = list(request.json.keys())
+        new_email = request.json.get('new_email')
+        new_password = request.json.get('new_password')
+        new_name = request.json.get('new_name')
+        all_input_list = [new_email, new_name, new_password]
         user_id = g.user['id']
         current_info = users_handler.get_by_id(user_id)
         current_info = dict(current_info)
