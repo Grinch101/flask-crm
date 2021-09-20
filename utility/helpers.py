@@ -8,7 +8,7 @@ import arrow
 import json
 
 ##### Create Connection pool ######
-def conn_pool(minconn, maxconn, /, host='localhost', database='phonebook', user='postgres', password=1):
+def conn_pool(minconn, maxconn, /, host='localhost', database='flask_crm', user='grinch', password=1):
 
     return ThreadedConnectionPool(minconn,
                                   maxconn,
@@ -17,11 +17,11 @@ def conn_pool(minconn, maxconn, /, host='localhost', database='phonebook', user=
                                   user=user,
                                   password=password)
 
-
 ############ query func  ##########
 def query(query, vals=""):
 
-    query = "sql/" + query + ".sql"
+    query = "/home/grinch/repos/flask-crm/SQL/" + query + ".sql"
+    print(query)
     path = Path(query)
 
     with open(path, 'r') as f:

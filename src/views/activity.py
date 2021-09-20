@@ -34,10 +34,10 @@ def get_all(contact_id):
 @activity.route('/<int:contact_id>', methods=["POST"])
 @login_required
 def add(contact_id):
-    action = request.form['action']
-    description = request.form['description']
-    date = request.form['date']
-    time = request.form['time']
+    action = request.josn['action']
+    description = request.json['description']
+    date = request.json['date']
+    time = request.json['time']
     if all([action, date, time]):
         cur = activities.add(action, description, date, time,
                              g.user['id'], contact_id)

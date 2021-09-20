@@ -26,3 +26,4 @@ def login_required(func):
             g.user = None
             return json_output(error= 'Please login!', http_code= 401) # unauthorized!
     return wrap
+

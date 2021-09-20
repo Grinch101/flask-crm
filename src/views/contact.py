@@ -18,8 +18,8 @@ def index():
 @contact.route('/add', methods=["POST"])
 @login_required
 def add():
-    input_name = request.form['Name']
-    input_number = request.form['Number']
+    input_name = request.josn['Name']
+    input_number = request.json['Number']
     if not all([input_name, input_number]):
         return json_output(error='incomplete request!', http_code=401)
     else:
@@ -56,9 +56,9 @@ def delete(id):
 @contact.route('/update/<int:id>', methods=['PUT'])
 @login_required
 def update(id):
-    if request.form is not None:
-        new_name = request.form.get('new_name')
-        new_phone = request.form.get('new_phone')
+    if request.josn is not None:
+        new_name = request.json['new_name']
+        new_phone = request.json['new_phone']
         old_data = phonebook.get_by_id(id)
         # old_data = cur.fetchone()
         if not all([new_name, new_phone]):
